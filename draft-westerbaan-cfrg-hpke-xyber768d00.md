@@ -50,13 +50,13 @@ author:
     fullname: Bas Westerbaan
     organization: Cloudflare
     email: bas@cloudflare.com
-    
+
 
 normative:
   rfc7748:
   rfc9180:
   kyber: I-D.cfrg-schwabe-kyber
-  
+
 informative:
   hybrid: I-D.ietf-tls-hybrid-design
   KyberV302:
@@ -109,7 +109,7 @@ To promote interoperability of early implementations,
 
 # Construction
 
-X25519Kyber768Draft00 is the concatenation 
+X25519Kyber768Draft00 is the concatenation
 
 ## DeriveKeyPair
 
@@ -135,13 +135,13 @@ This document requests/registers a new entry to the "HPKE KEM Identifiers"
 
  Nenc:
  : 1120
- 
+
  Npk:
  : 1216
- 
+
  Nsk:
  : 2432
- 
+
  Auth:
  : no
 
