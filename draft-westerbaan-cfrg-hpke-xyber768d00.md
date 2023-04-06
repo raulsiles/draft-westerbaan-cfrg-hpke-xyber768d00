@@ -176,7 +176,7 @@ as defined for DHKEM in {{Section 7.1.2 of RFC9180}}.
 
 DeriveKeyPair deterministically derives a X25519Kyber768Draft00 private
 and public key pair from a fixed-length seed. In particular, a single seed
-is stretched and passed to the relevant key derivation functions for 
+is stretched and passed to the relevant key derivation functions for
 DHKEM and Kyber768Draft00.
 
 ~~~
@@ -192,9 +192,9 @@ def DeriveKeyPair(ikm):
 
 DHKEM.DeriveKeyPair() is DeriveKeyPair() defined for DHKEM
 in {{Section 7.1.3 of RFC9180}}. Kyber768Draft00.DeriveKeyPair() is the key
-generation as defined in {{Section 11.1 of kyber}}.
+generation as defined in {{Section 11.1 of KYBER}}.
 
-ikm should be at least 32 octets in length.
+ikm SHOULD be at least 32 octets in length.
 (This is contrary to {{RFC9180}} which stipulates it should be
 at least Nsk=2432 octets in length.)
 
