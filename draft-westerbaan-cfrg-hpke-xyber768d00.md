@@ -10,20 +10,20 @@ date:
 consensus: true
 stand_alone: true
 v: 3
-area: AREA
-workgroup: None
+area: "IRTF"
+workgroup: "Crypto Forum"
 keyword:
  - kyber
  - post-quantum
  - x25519
  - hpke
 venue:
-  group: CFRG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00
-  latest: "https://bwesterb.github.io/draft-westerbaan-tls-xyber768d00/draft-westerbaan-cfrg-hpke-xyber768d00.html"
+  group: "Crypto Forum"
+  type: "Research Group"
+  mail: "cfrg@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/search/?email_list=cfrg"
+  github: "bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00"
+  latest: "https://bwesterb.github.io/draft-westerbaan-cfrg-hpke-xyber768d00/draft-westerbaan-cfrg-hpke-xyber768d00.html"
 
 author:
  -
