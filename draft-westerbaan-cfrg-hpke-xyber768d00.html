@@ -1248,12 +1248,13 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-construction" class="section-name selfRef">Construction</a>
       </h2>
 <p id="section-3-1">In short, X25519Kyber768Draft00 is the parallel combination
-    of DHKEM(X25519, HKDF-SHA256) and Kyber768Draft00:
+    of DHKEM(X25519, HKDF-SHA256) <span>[<a href="#rfc9180" class="cite xref">rfc9180</a>]</span> <span>[<a href="#rfc7748" class="cite xref">rfc7748</a>]</span>
+    and Kyber768Draft00 <span>[<a href="#kyber" class="cite xref">kyber</a>]</span>:
     public key, private key, cipher texts and shared
     secrets are simple concatenations.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">Kyber768Draft00 is Kyber768 as submitted to the third round
     of the NIST PQC process <span>[<a href="#KyberV302" class="cite xref">KyberV302</a>]</span>, where it is
-    also known as v3.02. It is also defined in <span>[<a href="#kyber" class="cite xref">kyber</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+    also known as v3.02.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <p id="section-3-3">Note that this hybrid KEM is different from the one
 defined in <span>[<a href="#tls-xyber" class="cite xref">tls-xyber</a>]</span> based on <span>[<a href="#hybrid" class="cite xref">hybrid</a>]</span> for TLS,
 as raw X25519 shared secrets can be used,
