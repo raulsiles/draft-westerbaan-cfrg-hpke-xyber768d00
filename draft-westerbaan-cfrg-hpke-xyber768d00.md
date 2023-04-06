@@ -134,17 +134,29 @@ KEM as DHKEM throughout the document.
 
 SerializePublicKey and DeserializePublicKey encode and decode
 X25519Kyber768Draft00 public keys to and from their wire format representation.
-
-DHKEM and Kyber768Draft00 use fixed-length
-octet strings as public keys,
-and use the identity function for SerializePublicKey()
-and DeserializePublicKey().
-
-For X25519Kyber768Draft00 we also use the identity function
-for SerializePublicKey() and DeserializePublicKey().
+Their implementation is described below.
 
 Note that DHKEM public keys MUST be validated before they
 can be used as stipulated in {{Section 7.1.1 of RFC9180}}.
+
+~~~
+def SerializePublicKey(pkX):
+  (pkA, pkB) = pkX
+  return concat(
+    DHKEM.SerializePublicKey(pkA),
+    pkB
+  )
+
+def DeserializePublicKey(pkXm):
+  return (
+    DHKEM.DeserializePublicKey(pkXm[0:32]),
+    pkXm[32:1216]
+  )
+~~~
+
+DHKEM.SerializePublicKey() and DHKEM.DeserializePublicKey()
+are SerializePublicKey() and respectively DeserializePublicKey()
+as defined for DHKEM in {{Section 7.1.1 of RFC9180}}.
 
 ## SerializePrivateKey and DeserializePrivateKey
 
@@ -161,10 +173,9 @@ def SerializePrivateKey(skX):
   )
 
 def DeserializePrivateKey(skXm):
-  (skA, skB) = skX
-  return concat(
-    DHKEM.DeserializePrivateKey(skA),
-    skB
+  return (
+    DHKEM.DeserializePrivateKey(skXm[0:32]),
+    skXm[32:2432]
   )
 ~~~
 
