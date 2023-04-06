@@ -106,13 +106,14 @@ To promote interoperability of early implementations,
 # Construction
 
 In short, X25519Kyber768Draft00 is the parallel combination
-    of DHKEM(X25519, HKDF-SHA256) and Kyber768Draft00:
+    of DHKEM(X25519, HKDF-SHA256) {{rfc9180}} {{rfc7748}}
+    and Kyber768Draft00 {{kyber}}:
     public key, private key, cipher texts and shared
     secrets are simple concatenations.
 
 Kyber768Draft00 is Kyber768 as submitted to the third round
     of the NIST PQC process {{KyberV302}}, where it is
-    also known as v3.02. It is also defined in {{kyber}}.
+    also known as v3.02.
 
 Note that this hybrid KEM is different from the one
 defined in {{tls-xyber}} based on {{hybrid}} for TLS,
