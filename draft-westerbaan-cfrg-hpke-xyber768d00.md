@@ -40,6 +40,7 @@ normative:
 informative:
   combiners: I-D.ounsworth-cfrg-kem-combiners
   hybrid: I-D.ietf-tls-hybrid-design
+  tls-xyber: I-D.tls-westerbaan-xyber768d00
   GHP18:
     target: https://doi.org/10.1007/978-3-319-76578-5_7
     title: KEM Combiners
@@ -113,6 +114,11 @@ In short, X25519Kyber768Draft00 is the parallel combination
 Kyber768Draft00 is Kyber768 as submitted to the third round
     of the NIST PQC process {{KyberV302}}, where it is
     also known as v3.02. It is also defined in {{kyber}}.
+
+Note that this hybrid KEM is different from the one
+defined in {{tls-xyber}} based on {{hybrid}} for TLS,
+as raw X25519 shared secrets can be used,
+thanks to the message transcript.
 
 We use HKDF-SHA256 as HKDF.
 
@@ -208,7 +214,7 @@ We aim for IND-CCA2 robustness: that means that if either constituent
 KEM is not IND-CCA2 secure, but the other is, the combined hybrid
 remains IND-CCA2 secure.
 
-In general {{GHP18}} this requires a combiner that mixes in
+In general {{GHP18}} {{combiners}} this requires a combiner that mixes in
 the cipher texts, such as, assuming fixed-length cipher texts and shared secrets:
 
     HKDF(concat(ss1, ss2, enc1, enc2)).
