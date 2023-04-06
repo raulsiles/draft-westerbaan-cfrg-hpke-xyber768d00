@@ -88,7 +88,6 @@ informative:
 This memo defines X25519Kyber768Draft00, a hybrid post-quantum KEM,
 for HPKE {{rfc9180}}.
 
-
 --- middle
 
 # Introduction
