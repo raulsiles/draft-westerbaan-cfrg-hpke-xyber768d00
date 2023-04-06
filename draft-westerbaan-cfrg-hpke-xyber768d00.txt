@@ -111,6 +111,10 @@ Table of Contents
    NIST PQC process [KyberV302], where it is also known as v3.02.  It is
    also defined in [kyber].
 
+   Note that this hybrid KEM is different from the one defined in
+   [tls-xyber] based on [hybrid] for TLS, as raw X25519 shared secrets
+   can be used, thanks to the message transcript.
+
    We use HKDF-SHA256 as HKDF.
 
 3.1.  SerializePublicKey and DeserializePublicKey
@@ -197,9 +201,9 @@ Table of Contents
    KEM is not IND-CCA2 secure, but the other is, the combined hybrid
    remains IND-CCA2 secure.
 
-   In general [GHP18] this requires a combiner that mixes in the cipher
-   texts, such as, assuming fixed-length cipher texts and shared
-   secrets:
+   In general [GHP18] [combiners] this requires a combiner that mixes in
+   the cipher texts, such as, assuming fixed-length cipher texts and
+   shared secrets:
 
    HKDF(concat(ss1, ss2, enc1, enc2)).
 
@@ -285,6 +289,13 @@ Table of Contents
               And Supporting Documentation (version 3.02)", 2021,
               <https://pq-crystals.org/kyber/data/kyber-specification-
               round3-20210804.pdf>.
+
+   [tls-xyber]
+              Westerbaan, B. and D. Stebila, "X25519Kyber768Draft00
+              hybrid post-quantum key agreement", Work in Progress,
+              Internet-Draft, draft-tls-westerbaan-xyber768d00-02, 31
+              March 2023, <https://datatracker.ietf.org/doc/html/draft-
+              tls-westerbaan-xyber768d00-02>.
 
 Appendix A.  Change log
 
