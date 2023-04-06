@@ -1266,15 +1266,29 @@ KEM as DHKEM throughout the document.<a href="#section-3-5" class="pilcrow">¶</
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-serializepublickey-and-dese" class="section-name selfRef">SerializePublicKey and DeserializePublicKey</a>
         </h3>
 <p id="section-3.1-1">SerializePublicKey and DeserializePublicKey encode and decode
-X25519Kyber768Draft00 public keys to and from their wire format representation.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">DHKEM and Kyber768Draft00 use fixed-length
-octet strings as public keys,
-and use the identity function for SerializePublicKey()
-and DeserializePublicKey().<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">For X25519Kyber768Draft00 we also use the identity function
-for SerializePublicKey() and DeserializePublicKey().<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">Note that DHKEM public keys <span class="bcp14">MUST</span> be validated before they
-can be used as stipulated in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.1" class="relref">Section 7.1.1</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+X25519Kyber768Draft00 public keys to and from their wire format representation.
+Their implementation is described below.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Note that DHKEM public keys <span class="bcp14">MUST</span> be validated before they
+can be used as stipulated in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.1" class="relref">Section 7.1.1</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-3">
+<pre>
+def SerializePublicKey(pkX):
+  (pkA, pkB) = pkX
+  return concat(
+    DHKEM.SerializePublicKey(pkA),
+    pkB
+  )
+
+def DeserializePublicKey(pkXm):
+  return (
+    DHKEM.DeserializePublicKey(pkXm[0:32]),
+    pkXm[32:1216]
+  )
+</pre><a href="#section-3.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-4">DHKEM.SerializePublicKey() and DHKEM.DeserializePublicKey()
+are SerializePublicKey() and respectively DeserializePublicKey()
+as defined for DHKEM in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.1" class="relref">Section 7.1.1</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="serializeprivatekey-and-deserializeprivatekey">
@@ -1295,10 +1309,9 @@ def SerializePrivateKey(skX):
   )
 
 def DeserializePrivateKey(skXm):
-  (skA, skB) = skX
-  return concat(
-    DHKEM.DeserializePrivateKey(skA),
-    skB
+  return (
+    DHKEM.DeserializePrivateKey(skXm[0:32]),
+    skXm[32:2432]
   )
 </pre><a href="#section-3.2-2" class="pilcrow">¶</a>
 </div>
