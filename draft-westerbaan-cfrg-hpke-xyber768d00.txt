@@ -1,0 +1,298 @@
+
+
+
+
+Crypto Forum                                               B. Westerbaan
+Internet-Draft                                                Cloudflare
+Intended status: Informational                              6 April 2023
+Expires: 8 October 2023
+
+
+         X25519Kyber768Draft00 hybrid post-quantum KEM for HPKE
+             draft-westerbaan-cfrg-hpke-xyber768d00-latest
+
+Abstract
+
+   This memo defines X25519Kyber768Draft00, a hybrid post-quantum KEM,
+   for HPKE [rfc9180].
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://bwesterb.github.io/draft-westerbaan-cfrg-hpke-xyber768d00/
+   draft-westerbaan-cfrg-hpke-xyber768d00.html.  Status information for
+   this document may be found at https://datatracker.ietf.org/doc/draft-
+   westerbaan-cfrg-hpke-xyber768d00/.
+
+   Discussion of this document takes place on the Crypto Forum Research
+   Group mailing list (mailto:cfrg@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/search/?email_list=cfrg.  Subscribe
+   at https://www.ietf.org/mailman/listinfo/cfrg/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 8 October 2023.
+
+Copyright Notice
+
+   Copyright (c) 2023 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Motivation
+   2.  Conventions and Definitions
+   3.  Construction
+     3.1.  SerializePublicKey and DeserializePublicKey
+     3.2.  SerializePrivateKey and DeserializePrivateKey
+     3.3.  DeriveKeyPair
+     3.4.  Encap and Decap
+   4.  Security Considerations
+     4.1.  Concatenation and IND-CCA2 robustness
+   5.  IANA Considerations
+   6.  References
+     6.1.  Normative References
+     6.2.  Informative References
+   Appendix A.  Change log
+   Author's Address
+
+1.  Introduction
+
+1.1.  Motivation
+
+   The final draft for Kyber is expected in 2024.  There is a desire to
+   deploy post-quantum cryptography earlier than that.  To promote
+   interoperability of early implementations, this document specifies a
+   preliminary hybrid post-quantum key agreement.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Construction
+
+   In short, X25519Kyber768Draft00 is the parallel combination of
+   DHKEM(X25519, HKDF-SHA256) and Kyber768Draft00: public key, private
+   key, cipher texts and shared secrets are simple concatenations.
+
+   Kyber768Draft00 is Kyber768 as submitted to the third round of the
+   NIST PQC process [KyberV302], where it is also known as v3.02.  It is
+   also defined in [kyber].
+
+   We use HKDF-SHA256 as HKDF.
+
+3.1.  SerializePublicKey and DeserializePublicKey
+
+   X25519 and Kyber768Draft00 use fixed-length octet strings as public
+   keys, and use the identity function for SerializePublicKey() and
+   DeserializePublicKey().  For X25519Kyber768Draft00 we also use the
+   identity function for SerializePublicKey() and
+   DeserializePublicKey().
+
+   Note that X25519 public keys MUST be validated before they can be
+   used as stipulated in Section 7.1.1 of [rfc9180].
+
+3.2.  SerializePrivateKey and DeserializePrivateKey
+
+   def SerializePrivateKey(skX):
+     sk1 = skX[0:32]
+     sk2 = skX[32:2432]
+     return concat(
+       X25519.SerializePrivateKey(sk1),
+       sk2
+     )
+
+   def DeserializePrivateKey(skXm):
+     sk1 = skXm[0:32]
+     sk2 = skXm[32:2432]
+     return concat(
+       X25519.DeserializePrivateKey(sk1),
+       sk2
+     )
+
+   X25519.SerializePrivateKey() and X25519.DeserializePrivateKey() are
+   SerializePrivateKey() and respectively DeserializePrivateKey() as
+   defined for X25519 in Section 7.1.2 of [rfc9180].
+
+3.3.  DeriveKeyPair
+
+   A single seed is stretched and passed to key derivation of X25519 and
+   Kyber768Draft00.
+
+   def DeriveKeyPair(ikm):
+     dkp_prk = LabeledExtract("", "dkp_prk", ikm)
+     seed = LabeledExpand(dkp_prk, "sk", 32 + 64)
+     seed1 = seed[0:32]
+     seed2 = seed[32:96]
+     sk1, pk1 = X25519.DeriveKeyPair(seed1)
+     sk2, pk2 = Kyber768Draft00.DeriveKeyPair(seed2)
+     return (concat(sk1, sk2), concat(pk1, pk2))
+
+   X25519.DeriveKeyPair() is DeriveKeyPair() defined for X25519 in
+   Section 7.1.3 of [rfc9180].  Kyber768Draft00.DeriveKeyPair() is the
+   key generation as defined in Section 11.1 of [kyber].
+
+   ikm should be at least 32 octets in length.  (This is contrary to
+   [rfc9180] which stipulates it should be at least Nsk=2432 octets in
+   length.)
+
+3.4.  Encap and Decap
+
+   def Encap(pkR):
+     pkR1 = pkR[0:32]
+     pkR2 = pkR[32:1216]
+     (ss1, enc1) = DHKEM(X25519, HKDF-SHA256).Encap(pkR1)
+     (ss2, enc2) = Kyber768Draft00.Encap(pkR2)
+     return (
+       concat(ss1, ss2),
+       concat(enc1, enc2)
+     )
+
+   def Decap(enc, skR):
+     skR1 = skR[0:32]
+     skR2 = skR[32:2432]
+     enc1 = enc[0:32]
+     enc2 = enc[32:1120]
+     ss1 = DHKEM(X25519, HKDF-SHA256).Decap(enc1, skR1)
+     ss2 = Kyber768Draft00.Decap(enc2, skR2)
+     return concat(ss1, ss2)
+
+4.  Security Considerations
+
+4.1.  Concatenation and IND-CCA2 robustness
+
+   We aim for IND-CCA2 robustness: that means that if either constituent
+   KEM is not IND-CCA2 secure, but the other is, the combined hybrid
+   remains IND-CCA2 secure.
+
+   In general [GHP18] this requires a combiner that mixes in the cipher
+   texts, such as, assuming fixed-length cipher texts and shared
+   secrets:
+
+   HKDF(concat(ss1, ss2, enc1, enc2)).
+
+   In the present case, DHKEM(X25519, -) and Kyber768Draft00 already mix
+   in the respective cipher texts into their shared secrets.  Thus we
+   can forego mixing in the cipher texts a second time.
+
+   Furthermore, in HPKE, the shared secret is never used directly, but
+   passed through HKDF (via KeySchedule), and thus we can forego the
+   call to HKDF as well.
+
+5.  IANA Considerations
+
+   This document requests/registers a new entry to the "HPKE KEM
+   Identifiers" registry.
+
+   Value:  0x30 (please)
+
+   KEM:  X25519Kyber768Draft00
+
+   Nsecret:  64
+
+   Nenc:  1120
+
+   Npk:  1216
+
+   Nsk:  2432
+
+   Auth:  no
+
+   Reference:  This document
+
+6.  References
+
+6.1.  Normative References
+
+   [kyber]    Schwabe, P. and B. Westerbaan, "Kyber Post-Quantum KEM",
+              Work in Progress, Internet-Draft, draft-cfrg-schwabe-
+              kyber-02, 31 March 2023,
+              <https://datatracker.ietf.org/doc/html/draft-cfrg-schwabe-
+              kyber-02>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [rfc7748]  Langley, A., Hamburg, M., and S. Turner, "Elliptic Curves
+              for Security", RFC 7748, DOI 10.17487/RFC7748, January
+              2016, <https://www.rfc-editor.org/rfc/rfc7748>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [rfc9180]  Barnes, R., Bhargavan, K., Lipp, B., and C. Wood, "Hybrid
+              Public Key Encryption", RFC 9180, DOI 10.17487/RFC9180,
+              February 2022, <https://www.rfc-editor.org/rfc/rfc9180>.
+
+6.2.  Informative References
+
+   [combiners]
+              Ounsworth, M., Wussler, A., and S. Kousidis, "Combiner
+              function for hybrid key encapsulation mechanisms (Hybrid
+              KEMs)", Work in Progress, Internet-Draft, draft-ounsworth-
+              cfrg-kem-combiners-03, 13 March 2023,
+              <https://datatracker.ietf.org/doc/html/draft-ounsworth-
+              cfrg-kem-combiners-03>.
+
+   [GHP18]    Giacon, F., Heuer, F., and B. Poettering, "KEM Combiners",
+              2018, <https://doi.org/10.1007/978-3-319-76578-5_7>.
+
+   [hybrid]   Stebila, D., Fluhrer, S., and S. Gueron, "Hybrid key
+              exchange in TLS 1.3", Work in Progress, Internet-Draft,
+              draft-ietf-tls-hybrid-design-06, 27 February 2023,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
+              hybrid-design-06>.
+
+   [KyberV302]
+              Avanzi, R., Bos, J., Ducas, L., Kiltz, E., Lepoint, T.,
+              Lyubashevsky, V., Schanck, J., Schwabe, P., Seiler, G.,
+              and D. Stehle, "CRYSTALS-Kyber, Algorithm Specification
+              And Supporting Documentation (version 3.02)", 2021,
+              <https://pq-crystals.org/kyber/data/kyber-specification-
+              round3-20210804.pdf>.
+
+Appendix A.  Change log
+
+      *RFC Editor's Note:* Please remove this section prior to
+      publication of a final version of this document.
+
+Author's Address
+
+   Bas Westerbaan
+   Cloudflare
+   Email: bas@cloudflare.com
