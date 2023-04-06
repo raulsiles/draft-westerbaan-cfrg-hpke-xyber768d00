@@ -14,7 +14,8 @@ Expires: 8 October 2023
 Abstract
 
    This memo defines X25519Kyber768Draft00, a hybrid post-quantum KEM,
-   for HPKE [rfc9180].
+   for HPKE (RFC9180).  This KEM does not support the authenticated
+   modes of HPKE.
 
 About This Document
 
@@ -60,10 +61,7 @@ Copyright Notice
    Provisions Relating to IETF Documents (https://trustee.ietf.org/
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
-   and restrictions with respect to this document.  Code Components
-   extracted from this document must include Revised BSD License text as
-   described in Section 4.e of the Trust Legal Provisions and are
-   provided without warranty as described in the Revised BSD License.
+   and restrictions with respect to this document.
 
 Table of Contents
 
@@ -76,7 +74,6 @@ Table of Contents
      3.3.  DeriveKeyPair
      3.4.  Encap and Decap
    4.  Security Considerations
-     4.1.  Concatenation and IND-CCA2 robustness
    5.  IANA Considerations
    6.  References
      6.1.  Normative References
@@ -104,104 +101,119 @@ Table of Contents
 3.  Construction
 
    In short, X25519Kyber768Draft00 is the parallel combination of
-   DHKEM(X25519, HKDF-SHA256) [rfc9180] [rfc7748] and Kyber768Draft00
-   [kyber]: public key, private key, cipher texts and shared secrets are
-   simple concatenations.
+   DHKEM(X25519, HKDF-SHA256) [RFC9180] [RFC7748] and Kyber768Draft00
+   [KYBER]: wire encodings of public key, private key, cipher texts and
+   shared secrets are simple concatenations.
+
+   A KEM private key is a tuple of an DHKEM(X25519, HKDF-SHA256) private
+   key and Kyber768Draft00 private key, where each is an octet string of
+   length 32 and 2400 bytes, respectively.  Similarly, a KEM public key
+   is a tuple of an DHKEM(X25519, HKDF-SHA256) public key and
+   Kyber768Draft00 public key.
 
    Kyber768Draft00 is Kyber768 as submitted to the third round of the
    NIST PQC process [KyberV302], where it is also known as v3.02.
 
    Note that this hybrid KEM is different from the one defined in
-   [tls-xyber] based on [hybrid] for TLS, as raw X25519 shared secrets
+   [TLS-XYBER] based on [HYBRID] for TLS, as raw X25519 shared secrets
    can be used, thanks to the message transcript.
 
-   We use HKDF-SHA256 as HKDF.
+   We use HKDF-SHA256 as the HPKE HKDF.  We denote the DHKEM(X25519,
+   HKDF-SHA256) KEM as DHKEM throughout the document.
 
 3.1.  SerializePublicKey and DeserializePublicKey
 
-   X25519 and Kyber768Draft00 use fixed-length octet strings as public
+   SerializePublicKey and DeserializePublicKey encode and decode
+   X25519Kyber768Draft00 public keys to and from their wire format
+   representation.
+
+   DHKEM and Kyber768Draft00 use fixed-length octet strings as public
    keys, and use the identity function for SerializePublicKey() and
-   DeserializePublicKey().  For X25519Kyber768Draft00 we also use the
-   identity function for SerializePublicKey() and
    DeserializePublicKey().
 
-   Note that X25519 public keys MUST be validated before they can be
-   used as stipulated in Section 7.1.1 of [rfc9180].
+   For X25519Kyber768Draft00 we also use the identity function for
+   SerializePublicKey() and DeserializePublicKey().
+
+   Note that DHKEM public keys MUST be validated before they can be used
+   as stipulated in Section 7.1.1 of [RFC9180].
 
 3.2.  SerializePrivateKey and DeserializePrivateKey
 
+   SerializePrivateKey and DeserializePrivateKey encode and decode
+   X25519Kyber768Draft00 private keys to and from their wire format
+   representation.  Their implementation is described below.
+
    def SerializePrivateKey(skX):
-     sk1 = skX[0:32]
-     sk2 = skX[32:2432]
+     (skA, skB) = skX
      return concat(
-       X25519.SerializePrivateKey(sk1),
-       sk2
+       DHKEM.SerializePrivateKey(skA),
+       skB
      )
 
    def DeserializePrivateKey(skXm):
-     sk1 = skXm[0:32]
-     sk2 = skXm[32:2432]
+     (skA, skB) = skX
      return concat(
-       X25519.DeserializePrivateKey(sk1),
-       sk2
+       DHKEM.DeserializePrivateKey(skA),
+       skB
      )
 
-   X25519.SerializePrivateKey() and X25519.DeserializePrivateKey() are
+   DHKEM.SerializePrivateKey() and DHKEM.DeserializePrivateKey() are
    SerializePrivateKey() and respectively DeserializePrivateKey() as
-   defined for X25519 in Section 7.1.2 of [rfc9180].
+   defined for DHKEM in Section 7.1.2 of [RFC9180].
 
 3.3.  DeriveKeyPair
 
-   A single seed is stretched and passed to key derivation of X25519 and
-   Kyber768Draft00.
+   DeriveKeyPair deterministically derives a X25519Kyber768Draft00
+   private and public key pair from a fixed-length seed.  In particular,
+   a single seed is stretched and passed to the relevant key derivation
+   functions for DHKEM and Kyber768Draft00.
 
    def DeriveKeyPair(ikm):
      dkp_prk = LabeledExtract("", "dkp_prk", ikm)
      seed = LabeledExpand(dkp_prk, "sk", 32 + 64)
      seed1 = seed[0:32]
      seed2 = seed[32:96]
-     sk1, pk1 = X25519.DeriveKeyPair(seed1)
+     sk1, pk1 = DHKEM.DeriveKeyPair(seed1)
      sk2, pk2 = Kyber768Draft00.DeriveKeyPair(seed2)
      return (concat(sk1, sk2), concat(pk1, pk2))
 
-   X25519.DeriveKeyPair() is DeriveKeyPair() defined for X25519 in
-   Section 7.1.3 of [rfc9180].  Kyber768Draft00.DeriveKeyPair() is the
-   key generation as defined in Section 11.1 of [kyber].
+   DHKEM.DeriveKeyPair() is DeriveKeyPair() defined for DHKEM in
+   Section 7.1.3 of [RFC9180].  Kyber768Draft00.DeriveKeyPair() is the
+   key generation as defined in Section 11.1 of [KYBER].
 
-   ikm should be at least 32 octets in length.  (This is contrary to
-   [rfc9180] which stipulates it should be at least Nsk=2432 octets in
+   ikm SHOULD be at least 32 octets in length.  (This is contrary to
+   [RFC9180] which stipulates it should be at least Nsk=2432 octets in
    length.)
 
 3.4.  Encap and Decap
 
+   Encap and Decap are the primary KEM functions.  Their implementation
+   is described below.
+
    def Encap(pkR):
-     pkR1 = pkR[0:32]
-     pkR2 = pkR[32:1216]
-     (ss1, enc1) = DHKEM(X25519, HKDF-SHA256).Encap(pkR1)
-     (ss2, enc2) = Kyber768Draft00.Encap(pkR2)
+     (pkA, pkB) = pkR
+     (ss1, enc1) = DHKEM.Encap(pkA)
+     (ss2, enc2) = Kyber768Draft00.Encap(pkB)
      return (
        concat(ss1, ss2),
        concat(enc1, enc2)
      )
 
    def Decap(enc, skR):
-     skR1 = skR[0:32]
-     skR2 = skR[32:2432]
+     (skA, skB) = skR
      enc1 = enc[0:32]
      enc2 = enc[32:1120]
-     ss1 = DHKEM(X25519, HKDF-SHA256).Decap(enc1, skR1)
-     ss2 = Kyber768Draft00.Decap(enc2, skR2)
+     ss1 = DHKEM.Decap(enc1, skA)
+     ss2 = Kyber768Draft00.Decap(enc2, skB)
      return concat(ss1, ss2)
 
 4.  Security Considerations
-
-4.1.  Concatenation and IND-CCA2 robustness
 
    We aim for IND-CCA2 robustness: that means that if either constituent
    KEM is not IND-CCA2 secure, but the other is, the combined hybrid
    remains IND-CCA2 secure.
 
-   In general [GHP18] [combiners] this requires a combiner that mixes in
+   In general [GHP18] [COMBINERS] this requires a combiner that mixes in
    the cipher texts, such as, assuming fixed-length cipher texts and
    shared secrets:
 
@@ -240,7 +252,7 @@ Table of Contents
 
 6.1.  Normative References
 
-   [kyber]    Schwabe, P. and B. Westerbaan, "Kyber Post-Quantum KEM",
+   [KYBER]    Schwabe, P. and B. Westerbaan, "Kyber Post-Quantum KEM",
               Work in Progress, Internet-Draft, draft-cfrg-schwabe-
               kyber-02, 31 March 2023,
               <https://datatracker.ietf.org/doc/html/draft-cfrg-schwabe-
@@ -251,7 +263,7 @@ Table of Contents
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
-   [rfc7748]  Langley, A., Hamburg, M., and S. Turner, "Elliptic Curves
+   [RFC7748]  Langley, A., Hamburg, M., and S. Turner, "Elliptic Curves
               for Security", RFC 7748, DOI 10.17487/RFC7748, January
               2016, <https://www.rfc-editor.org/rfc/rfc7748>.
 
@@ -259,13 +271,13 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-   [rfc9180]  Barnes, R., Bhargavan, K., Lipp, B., and C. Wood, "Hybrid
+   [RFC9180]  Barnes, R., Bhargavan, K., Lipp, B., and C. Wood, "Hybrid
               Public Key Encryption", RFC 9180, DOI 10.17487/RFC9180,
               February 2022, <https://www.rfc-editor.org/rfc/rfc9180>.
 
 6.2.  Informative References
 
-   [combiners]
+   [COMBINERS]
               Ounsworth, M., Wussler, A., and S. Kousidis, "Combiner
               function for hybrid key encapsulation mechanisms (Hybrid
               KEMs)", Work in Progress, Internet-Draft, draft-ounsworth-
@@ -276,7 +288,7 @@ Table of Contents
    [GHP18]    Giacon, F., Heuer, F., and B. Poettering, "KEM Combiners",
               2018, <https://doi.org/10.1007/978-3-319-76578-5_7>.
 
-   [hybrid]   Stebila, D., Fluhrer, S., and S. Gueron, "Hybrid key
+   [HYBRID]   Stebila, D., Fluhrer, S., and S. Gueron, "Hybrid key
               exchange in TLS 1.3", Work in Progress, Internet-Draft,
               draft-ietf-tls-hybrid-design-06, 27 February 2023,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
@@ -290,7 +302,7 @@ Table of Contents
               <https://pq-crystals.org/kyber/data/kyber-specification-
               round3-20210804.pdf>.
 
-   [tls-xyber]
+   [TLS-XYBER]
               Westerbaan, B. and D. Stebila, "X25519Kyber768Draft00
               hybrid post-quantum key agreement", Work in Progress,
               Internet-Draft, draft-tls-westerbaan-xyber768d00-02, 31
