@@ -3,9 +3,9 @@
 
 
 Crypto Forum                                               B. Westerbaan
-Internet-Draft                                                Cloudflare
-Intended status: Informational                              7 April 2023
-Expires: 9 October 2023
+Internet-Draft                                                C. A. Wood
+Intended status: Informational                                Cloudflare
+Expires: 9 October 2023                                     7 April 2023
 
 
          X25519Kyber768Draft00 hybrid post-quantum KEM for HPKE
@@ -83,7 +83,7 @@ Table of Contents
      B.1.  DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256,
            AES-128-GCM
        B.1.1.  Base Setup Information
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -817,8 +817,13 @@ B.1.1.2.  Exported Values
    exported_value:
    95239ef81d885b1466d05b0a29918972214f0f9078ea7f0169b574d4580272e9
 
-Author's Address
+Authors' Addresses
 
    Bas Westerbaan
    Cloudflare
    Email: bas@cloudflare.com
+
+
+   Christopher A. Wood
+   Cloudflare
+   Email: caw@heapingbits.net
