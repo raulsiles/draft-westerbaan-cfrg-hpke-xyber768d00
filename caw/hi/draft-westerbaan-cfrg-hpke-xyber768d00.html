@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>X25519Kyber768Draft00 hybrid post-quantum KEM for HPKE</title>
+<meta content="Bas Westerbaan" name="author">
+<meta content="Christopher A. Wood" name="author">
+<meta content="
+       This memo defines X25519Kyber768Draft00, a hybrid post-quantum KEM,
+for HPKE (RFC9180). This KEM does not support the authenticated modes
+of HPKE. 
+    " name="description">
+<meta content="xml2rfc 3.17.0" name="generator">
+<meta content="kyber" name="keyword">
+<meta content="post-quantum" name="keyword">
+<meta content="x25519" name="keyword">
+<meta content="hpke" name="keyword">
+<meta content="draft-westerbaan-cfrg-hpke-xyber768d00-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.17.0
+    Python 3.10.10
+    appdirs 1.4.4
+    ConfigArgParse 1.5.3
+    google-i18n-address 2.5.2
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.2
+    lxml 4.9.2
+    MarkupSafe 2.1.1
+    pycountry 22.3.5
+    PyYAML 6.0
+    requests 2.28.1
+    setuptools 65.6.0
+    six 1.16.0
+    wcwidth 0.2.6
+-->
+<link href="draft-westerbaan-cfrg-hpke-xyber768d00.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 1;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl.olPercent {
+  --indent: 5ch;
+}
+dl > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+dl.olPercent > dt {
+  min-width: calc(var(--indent) - 2ch);
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  min-width: var(--identifier-width);
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dt:target::before {
+  content: "⇒";
+  width: 15px;
+  margin: 0 10px 0 -25px;
+}
+.references dd {
+  margin-left: 8em !important;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">hpke-xyber768d00</td>
+<td class="right">April 2023</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Westerbaan &amp; Wood</td>
+<td class="center">Expires 9 October 2023</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Crypto Forum</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-westerbaan-cfrg-hpke-xyber768d00-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2023-04-07" class="published">7 April 2023</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2023-10-09">9 October 2023</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">B. Westerbaan</div>
+<div class="org">Cloudflare</div>
+</div>
+<div class="author">
+      <div class="author-name">C. A. Wood</div>
+<div class="org">Cloudflare</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">X25519Kyber768Draft00 hybrid post-quantum KEM for HPKE</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This memo defines X25519Kyber768Draft00, a hybrid post-quantum KEM,
+for HPKE (RFC9180). This KEM does not support the authenticated modes
+of HPKE.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://bwesterb.github.io/draft-westerbaan-cfrg-hpke-xyber768d00/draft-westerbaan-cfrg-hpke-xyber768d00.html">https://bwesterb.github.io/draft-westerbaan-cfrg-hpke-xyber768d00/draft-westerbaan-cfrg-hpke-xyber768d00.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-westerbaan-cfrg-hpke-xyber768d00/">https://datatracker.ietf.org/doc/draft-westerbaan-cfrg-hpke-xyber768d00/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        Crypto Forum Research Group mailing list (<span><a href="mailto:cfrg@ietf.org">mailto:cfrg@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/search/?email_list=cfrg">https://mailarchive.ietf.org/arch/search/?email_list=cfrg</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/cfrg/">https://www.ietf.org/mailman/listinfo/cfrg/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00">https://github.com/bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 9 October 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2023 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-motivation" class="internal xref">Motivation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-construction" class="internal xref">Construction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-serializepublickey-and-dese" class="internal xref">SerializePublicKey and DeserializePublicKey</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-serializeprivatekey-and-des" class="internal xref">SerializePrivateKey and DeserializePrivateKey</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-derivekeypair" class="internal xref">DeriveKeyPair</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-encap-and-decap" class="internal xref">Encap and Decap</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-change-log" class="internal xref">Change log</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-test-vectors" class="internal xref">Test Vectors</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-dhkemx25519-hkdf-sha256kybe" class="internal xref">DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256, AES-128-GCM</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1.2.1">
+                    <p id="section-toc.1-1.8.2.1.2.1.1"><a href="#appendix-B.1.1" class="auto internal xref">B.1.1</a>.  <a href="#name-base-setup-information" class="internal xref">Base Setup Information</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<div id="motivation">
+<section id="section-1.1">
+        <h3 id="name-motivation">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-motivation" class="section-name selfRef">Motivation</a>
+        </h3>
+<p id="section-1.1-1">The final draft for Kyber is expected in 2024.
+There is a desire to deploy post-quantum cryptography earlier than that.
+To promote interoperability of early implementations,
+    this document specifies a preliminary hybrid post-quantum key agreement.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="construction">
+<section id="section-3">
+      <h2 id="name-construction">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-construction" class="section-name selfRef">Construction</a>
+      </h2>
+<p id="section-3-1">In short, X25519Kyber768Draft00 is the parallel combination
+of DHKEM(X25519, HKDF-SHA256) <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> <span>[<a href="#RFC7748" class="cite xref">RFC7748</a>]</span>
+and Kyber768Draft00 <span>[<a href="#KYBER" class="cite xref">KYBER</a>]</span>:
+wire encodings of public key, private key, cipher texts
+and shared secrets are simple concatenations.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">A KEM private key is a tuple of an DHKEM(X25519, HKDF-SHA256)
+private key and Kyber768Draft00 private key, where each is
+an octet string of length 32 and 2400 bytes, respectively.
+Similarly, a KEM public key is a tuple of an DHKEM(X25519, HKDF-SHA256)
+public key and Kyber768Draft00 public key.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">Kyber768Draft00 is Kyber768 as submitted to the third round
+of the NIST PQC process <span>[<a href="#KyberV302" class="cite xref">KyberV302</a>]</span>, where it is
+also known as v3.02.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">Note that this hybrid KEM is different from the one
+defined in <span>[<a href="#TLS-XYBER" class="cite xref">TLS-XYBER</a>]</span> based on <span>[<a href="#HYBRID" class="cite xref">HYBRID</a>]</span> for TLS,
+as raw X25519 shared secrets can be used,
+thanks to the message transcript.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">We use HKDF-SHA256 as the HPKE HKDF. We denote the DHKEM(X25519, HKDF-SHA256)
+KEM as DHKEM throughout the document.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<div id="serializepublickey-and-deserializepublickey">
+<section id="section-3.1">
+        <h3 id="name-serializepublickey-and-dese">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-serializepublickey-and-dese" class="section-name selfRef">SerializePublicKey and DeserializePublicKey</a>
+        </h3>
+<p id="section-3.1-1">SerializePublicKey and DeserializePublicKey encode and decode
+X25519Kyber768Draft00 public keys to and from their wire format representation.
+Their implementation is described below.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Note that DHKEM public keys <span class="bcp14">MUST</span> be validated before they
+can be used as stipulated in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.1" class="relref">Section 7.1.1</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-3">
+<pre>
+def SerializePublicKey(pkX):
+  (pkA, pkB) = pkX
+  return concat(
+    DHKEM.SerializePublicKey(pkA),
+    pkB
+  )
+
+def DeserializePublicKey(pkXm):
+  return (
+    DHKEM.DeserializePublicKey(pkXm[0:32]),
+    pkXm[32:1216]
+  )
+</pre><a href="#section-3.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-4">DHKEM.SerializePublicKey() and DHKEM.DeserializePublicKey()
+are SerializePublicKey() and respectively DeserializePublicKey()
+as defined for DHKEM in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.1" class="relref">Section 7.1.1</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="serializeprivatekey-and-deserializeprivatekey">
+<section id="section-3.2">
+        <h3 id="name-serializeprivatekey-and-des">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-serializeprivatekey-and-des" class="section-name selfRef">SerializePrivateKey and DeserializePrivateKey</a>
+        </h3>
+<p id="section-3.2-1">SerializePrivateKey and DeserializePrivateKey encode and decode
+X25519Kyber768Draft00 private keys to and from their wire format representation.
+Their implementation is described below.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-2">
+<pre>
+def SerializePrivateKey(skX):
+  (skA, skB) = skX
+  return concat(
+    DHKEM.SerializePrivateKey(skA),
+    skB
+  )
+
+def DeserializePrivateKey(skXm):
+  return (
+    DHKEM.DeserializePrivateKey(skXm[0:32]),
+    skXm[32:2432]
+  )
+</pre><a href="#section-3.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-3">DHKEM.SerializePrivateKey() and DHKEM.DeserializePrivateKey()
+are SerializePrivateKey() and respectively DeserializePrivateKey()
+as defined for DHKEM in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.2" class="relref">Section 7.1.2</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="derivekeypair">
+<section id="section-3.3">
+        <h3 id="name-derivekeypair">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-derivekeypair" class="section-name selfRef">DeriveKeyPair</a>
+        </h3>
+<p id="section-3.3-1">DeriveKeyPair deterministically derives a X25519Kyber768Draft00 private
+and public key pair from a fixed-length seed. In particular, a single seed
+is stretched and passed to the relevant key derivation functions for
+DHKEM and Kyber768Draft00.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.3-2">
+<pre>
+def DeriveKeyPair(ikm):
+  dkp_prk = LabeledExtract("", "dkp_prk", ikm)
+  seed = LabeledExpand(dkp_prk, "sk", 32 + 64)
+  seed1 = seed[0:32]
+  seed2 = seed[32:96]
+  sk1, pk1 = DHKEM.DeriveKeyPair(seed1)
+  sk2, pk2 = Kyber768Draft00.DeriveKeyPair(seed2)
+  return (concat(sk1, sk2), concat(pk1, pk2))
+</pre><a href="#section-3.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-3">DHKEM.DeriveKeyPair() is DeriveKeyPair() defined for DHKEM
+in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.3" class="relref">Section 7.1.3</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>. Kyber768Draft00.DeriveKeyPair() is the key
+generation as defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-cfrg-schwabe-kyber-02#section-11.1" class="relref">Section 11.1</a> of [<a href="#KYBER" class="cite xref">KYBER</a>]</span>.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">ikm <span class="bcp14">SHOULD</span> be at least 32 octets in length.
+(This is contrary to <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> which stipulates it should be
+at least Nsk=2432 octets in length.)<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="encap-and-decap">
+<section id="section-3.4">
+        <h3 id="name-encap-and-decap">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-encap-and-decap" class="section-name selfRef">Encap and Decap</a>
+        </h3>
+<p id="section-3.4-1">Encap and Decap are the primary KEM functions. Their implementation
+is described below.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4-2">
+<pre>
+def Encap(pkR):
+  (pkA, pkB) = pkR
+  (ss1, enc1) = DHKEM.Encap(pkA)
+  (ss2, enc2) = Kyber768Draft00.Encap(pkB)
+  return (
+    concat(ss1, ss2),
+    concat(enc1, enc2)
+  )
+
+def Decap(enc, skR):
+  (skA, skB) = skR
+  enc1 = enc[0:32]
+  enc2 = enc[32:1120]
+  ss1 = DHKEM.Decap(enc1, skA)
+  ss2 = Kyber768Draft00.Decap(enc2, skB)
+  return concat(ss1, ss2)
+</pre><a href="#section-3.4-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-4-1">We aim for IND-CCA2 robustness: that means that if either constituent
+KEM is not IND-CCA2 secure, but the other is, the combined hybrid
+remains IND-CCA2 secure.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">In general <span>[<a href="#GHP18" class="cite xref">GHP18</a>]</span> <span>[<a href="#COMBINERS" class="cite xref">COMBINERS</a>]</span> this requires a combiner that mixes in
+the cipher texts, such as, assuming fixed-length cipher texts and shared secrets:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4-3">
+<pre>
+HKDF(concat(ss1, ss2, enc1, enc2)).
+</pre><a href="#section-4-3" class="pilcrow">¶</a>
+</div>
+<p id="section-4-4">In the present case, DHKEM(X25519, -) and Kyber768Draft00 already mix in
+the respective cipher texts into their shared secrets. Thus we can
+forgo mixing in the cipher texts a second time.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">Furthermore, in HPKE, the shared secret is never used directly, but
+passed through HKDF (via KeySchedule), and thus we can
+forgo the call to HKDF as well.<a href="#section-4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-5-1">This document requests/registers a new entry to the "HPKE KEM Identifiers"
+ registry.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-5-2">
+        <dt id="section-5-2.1">Value:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.2">
+          <p id="section-5-2.2.1">0x30 (please)<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.3">KEM:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.4">
+          <p id="section-5-2.4.1">X25519Kyber768Draft00<a href="#section-5-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.5">Nsecret:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.6">
+          <p id="section-5-2.6.1">64<a href="#section-5-2.6.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.7">Nenc:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.8">
+          <p id="section-5-2.8.1">1120<a href="#section-5-2.8.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.9">Npk:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.10">
+          <p id="section-5-2.10.1">1216<a href="#section-5-2.10.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.11">Nsk:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.12">
+          <p id="section-5-2.12.1">2432<a href="#section-5-2.12.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.13">Auth:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.14">
+          <p id="section-5-2.14.1">no<a href="#section-5-2.14.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.15">Reference:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.16">
+          <p id="section-5-2.16.1">This document<a href="#section-5-2.16.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<section id="section-6">
+      <h2 id="name-references">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-6.1">
+        <h3 id="name-normative-references">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="KYBER">[KYBER]</dt>
+        <dd>
+<span class="refAuthor">Schwabe, P.</span> and <span class="refAuthor">B. Westerbaan</span>, <span class="refTitle">"Kyber Post-Quantum KEM"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-cfrg-schwabe-kyber-02</span>, <time datetime="2023-03-31" class="refDate">31 March 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-cfrg-schwabe-kyber-02">https://datatracker.ietf.org/doc/html/draft-cfrg-schwabe-kyber-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7748">[RFC7748]</dt>
+        <dd>
+<span class="refAuthor">Langley, A.</span>, <span class="refAuthor">Hamburg, M.</span>, and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"Elliptic Curves for Security"</span>, <span class="seriesInfo">RFC 7748</span>, <span class="seriesInfo">DOI 10.17487/RFC7748</span>, <time datetime="2016-01" class="refDate">January 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7748">https://www.rfc-editor.org/rfc/rfc7748</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9180">[RFC9180]</dt>
+      <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="seriesInfo">RFC 9180</span>, <span class="seriesInfo">DOI 10.17487/RFC9180</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9180">https://www.rfc-editor.org/rfc/rfc9180</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-6.2">
+        <h3 id="name-informative-references">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="COMBINERS">[COMBINERS]</dt>
+        <dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Wussler, A.</span>, and <span class="refAuthor">S. Kousidis</span>, <span class="refTitle">"Combiner function for hybrid key encapsulation mechanisms (Hybrid KEMs)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ounsworth-cfrg-kem-combiners-03</span>, <time datetime="2023-03-13" class="refDate">13 March 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ounsworth-cfrg-kem-combiners-03">https://datatracker.ietf.org/doc/html/draft-ounsworth-cfrg-kem-combiners-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="GHP18">[GHP18]</dt>
+        <dd>
+<span class="refAuthor">Giacon, F.</span>, <span class="refAuthor">Heuer, F.</span>, and <span class="refAuthor">B. Poettering</span>, <span class="refTitle">"KEM Combiners"</span>, <time datetime="2018" class="refDate">2018</time>, <span>&lt;<a href="https://doi.org/10.1007/978-3-319-76578-5_7">https://doi.org/10.1007/978-3-319-76578-5_7</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HYBRID">[HYBRID]</dt>
+        <dd>
+<span class="refAuthor">Stebila, D.</span>, <span class="refAuthor">Fluhrer, S.</span>, and <span class="refAuthor">S. Gueron</span>, <span class="refTitle">"Hybrid key exchange in TLS 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-hybrid-design-06</span>, <time datetime="2023-02-27" class="refDate">27 February 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-hybrid-design-06">https://datatracker.ietf.org/doc/html/draft-ietf-tls-hybrid-design-06</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="KyberV302">[KyberV302]</dt>
+        <dd>
+<span class="refAuthor">Avanzi, R.</span>, <span class="refAuthor">Bos, J.</span>, <span class="refAuthor">Ducas, L.</span>, <span class="refAuthor">Kiltz, E.</span>, <span class="refAuthor">Lepoint, T.</span>, <span class="refAuthor">Lyubashevsky, V.</span>, <span class="refAuthor">Schanck, J.</span>, <span class="refAuthor">Schwabe, P.</span>, <span class="refAuthor">Seiler, G.</span>, and <span class="refAuthor">D. Stehle</span>, <span class="refTitle">"CRYSTALS-Kyber, Algorithm Specification And Supporting Documentation (version 3.02)"</span>, <time datetime="2021" class="refDate">2021</time>, <span>&lt;<a href="https://pq-crystals.org/kyber/data/kyber-specification-round3-20210804.pdf">https://pq-crystals.org/kyber/data/kyber-specification-round3-20210804.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TLS-XYBER">[TLS-XYBER]</dt>
+      <dd>
+<span class="refAuthor">Westerbaan, B.</span> and <span class="refAuthor">D. Stebila</span>, <span class="refTitle">"X25519Kyber768Draft00 hybrid post-quantum key agreement"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-tls-westerbaan-xyber768d00-02</span>, <time datetime="2023-03-31" class="refDate">31 March 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-tls-westerbaan-xyber768d00-02">https://datatracker.ietf.org/doc/html/draft-tls-westerbaan-xyber768d00-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="change-log">
+<section id="appendix-A">
+      <h2 id="name-change-log">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-change-log" class="section-name selfRef">Change log</a>
+      </h2>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="appendix-A-1.1">
+          <p id="appendix-A-1.1.1"><strong>RFC Editor's Note:</strong> Please remove this section prior to publication of a
+final version of this document.<a href="#appendix-A-1.1.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="test-vectors">
+<section id="appendix-B">
+      <h2 id="name-test-vectors">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-test-vectors" class="section-name selfRef">Test Vectors</a>
+      </h2>
+<p id="appendix-B-1">This section contains test vectors formatted similary to that which are found in <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>,
+except that it only contains vectors for the base mode of operation.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<div id="dhkemx25519-hkdf-sha256kyber768draft00-hkdf-sha256-aes-128-gcm">
+<section id="appendix-B.1">
+        <h3 id="name-dhkemx25519-hkdf-sha256kybe">
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-dhkemx25519-hkdf-sha256kybe" class="section-name selfRef">DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256, AES-128-GCM</a>
+        </h3>
+<div id="base-setup-information">
+<section id="appendix-B.1.1">
+          <h4 id="name-base-setup-information">
+<a href="#appendix-B.1.1" class="section-number selfRef">B.1.1. </a><a href="#name-base-setup-information" class="section-name selfRef">Base Setup Information</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-B.1.1-1">
+<pre>
+mode: 0
+kem_id: 48
+kdf_id: 1
+aead_id: 1
+info: 486561722068656172
+ikmE:
+48770d6e9af0f67b3e15b837f20b43cc0f0135dc90b544cad4ac44c79f9bee9f
+pkEm: 5deee09b43f0a8f33227a4b1c2d4f28fdb1689bc4a89a2176fbca3e3ad0788
+50620c4ed90903405a7117a86512fb384114829c5c6fb9732549480312f52dd81ac8
+976a861ab187b4eb385d92a6848b5d00c4ab6c4a340d14ae18c8ba65723426fa0554
+ab14f8a7902323145ca5169552cab3801d8cc62f03647255822f9c9b8ab360120d59
+6f147c2eae1c9adbea7c3b4953e8d4330e759a2aea211573aaacd8a879b5a63d7cad
+3aa23fa5c425ca5bc728a842dd82180cd5b483c7b2ce056c20104f86e89a7639685a
+87a750618824e9694a99a864e837d61456da7477f0c1b4380c5f8d401b951b1ccff6
+aeca4c86fe90a3d034bd9f51a810b2c085d75d41a4a2b7c28b108baf64d2c795d229
+2300065bd64257f5759b107da8ac999698803f2538c792a3a3cccfeba5cc57087cd2
+fb297db007c4fa357a904b8791bdae8cbc997689a6b57e452ab4b07251075a8304e6
+cbdc0a8fba6656a2d42b24db8333325c6413c1896a0eec7b5110a838d2d7bf40c87b
+bd6a096a1525df8183e0e334d684ceac1013ff94070cc17a67b79fbc352a76728ade
+b1690ae7236decacf068cc85b68de2ba857b63b72f432f36f5a4fb99319e5200f824
+7a8548523b370793498827e9cb7a0239d7a461d849be6c598fbf5081ff79c1932312
+8f104419585f46b146d2d882378326b6b5031d563ce4f0473776304c6146d4c77ce7
+839834ac31ea4b47a33a740468005ca55715dc7a63da4973b13d22fc9b2c70255ab3
+30dd6ab41ba414efab612699b8ca95b44a844ae4f86f3d87078d78c241a83b0bd2a8
+7fd1bcff0a14552725f1aa426444cb6954c006d506dbe0a637238a085ac6c5f50b03
+410d0fc20b1ff2bb1ec55f3726547ee03e03986f9e1ab445680aa07a4dc1ac2598f8
+cf7b65a7e74ac0d0a78063371302a17e65d89eec1050a0023446d4c082629a59537b
+d5314f8d7142a2e6b80ab37f119b1027b8c3736722ade3bc112180736bbbff95bb85
+d408c7d9bec9b69ebef47a8d0755248b2f603653032839abc4756de884ac77081d84
+6f15abb89adbbb190a7ed9c936100237f109732e523559a18ce0e84dc8fb0d6de1ab
+472070e8f59c61b763279522b4a42ec5d1855434546628983058ba47e81ded719899
+f581459297be956185c42ca0497b10c912103313203479abcc04a21568b041032d32
+1fc46508de665ff3900383a65cdb0121303a29473957a1ec9991a102175062bc10b7
+cb98c6c5337f1115972931ba3de87795dacad7ba52cae56ff8688f16095b20118f84
+f936e989033bba296829bba71b6b93c602bf6632e2fab0b16c832e2c7fffd471a088
+596c43c4ea421b999304808a3f7d0934574b928298b50ae68926c125453a5614a372
+113a898e518be0d16a18f657b3984b6046baa4ec9630395b8fe8ab7f586e55411027
+0b4c4e8594b641485a339be0220a98426859f9b9207137efa2302d3650bfd87893ac
+79cd31492ec68501305ee5e71126e532307a5936001879002b68749a5ccc851e776b
+6ae1a3e641283da815a354b61719c4be010268f1ae835b52281479da71010e6ab37d
+e342b4bc9d4d493930c9893ec6547e74862cea4ed25163bd2424e6ca2e56263c33e9
+37c56b35e89bc068d9c343a00f7b9a717c276d724a8654a884984829bb1bb4dda99f
+0d0e0c8a800ff44739be3a86fc4b72788334aae59de68faf306fbee762
+skEm: 659c885b95a936856c7af7b28f41c2edb10e056c5b553c115fd663068c43fc
+605179182c00586e6e7a399cf53147fa9baf22618c88052f62121d23854353c3511b
+8ad8149d1493a4e8cc29f031bf3946079878c53b6960984865182b2af3c2cc2e49be
+80f3680d1808e41ac223e39bb8742baa23bef75ca0b472204c6a102be2cc5f8a49b6
+d7408aa1324104ac64108c94ec37cc2243a0240a09ba9d4ee373a76cce77bc97c2a8
+5ff30893eca20a04fc4661bbbf2e5a9471d23ba359af1cc18bd26255b49a91aa8632
+47d70133882b3d683628f97e654686ab200e7147ca0b445fe87b614ee254a8f15313
+a94501420de238977b15aa11d27cfc45658db79791f3a5f52540a21a9ce3960472a1
+29c4760418213c73724859578dc1a13d5e6bb9c1b365b1760d479aa6aaf73a64ec2c
+844c725691a11cb31b9ac2c973e55389d04d80f80d14576614e69ab7cc7370836704
+8159dd0693eee573fd4a081778157c56399f2b78c0d19beaec40a75373005c4f7517
+0cbf583b4d85ba1aec1e8c999fd162c8d744289bcb8c1404a6e3e6ba6418cdbca811
+71c210418b176531ad76b443c8f2b03641a105b5bfc10aa249a9078be49a15f82846
+94c83a309a7e6a8d0cb2b80d732b0509b98470ad22b5c7baba86120bc5fb643eadc6
+2d92ca327b00801c956f76b49de219243761bd0083322d5334d396ad16354177aa6d
+a7bc315a8aac668486bdc36063196c6a58bd8a9775a40398f1a734e5608cd214981e
+0b3faa52488c98aa0d78b725523c9f21ad21218d5875a3cde5346eacc82b653ea285
+05a3a0c0ff5220c08a55c10cab0b97c6bf814461b0b740a9145bc52f134a8d273c63
+42189fc5687387d19228d2ace25bb3568536daa66ef0c05e60933c23262bbb22a55b
+302593f9495d98aaaf4ccc08da3ccee89f1515451a4cce34a3753b71341a155a9a2b
+248f7a745a31b834d7b7781c6f220a18973133cfb29815815b70eb7ae46c1668ea22
+356c2d88a093b123af96a85d6b190ac83054f2917c4418c751d6c2436a1f1dea6e58
+99228129aa281626a6a4bb51816e0201be9c075764507700b24347139ade6354e44c
+951e25846ef31314566027b9625b847f16a57ea7f4607492c5360047c6c0a6a5f504
+6c4295ef8913a2c1ba0b489f54c0924b25181e0c9196330aa67c7198f4c0e2f34c0f
+223d36da12711493824b02d1685f35946b3c296fb780830c955739656248f15df479
+6ec282c7b1e76411a50c558a355d053f03fbaca086789334aa15c769b2ec4afa1123
+01c330fe35c2ba6990566775c3618f2ae2970301a3d1f8b29c559e58f8105412a82f
+17cc57a0454a9441fbe40311442d953325a63077b48b41d1e96235e82dde48cd1392
+b521814ae01a179ec418303308105c54a814ab14670d056484f4aa3229e182c4b52a
+bdd50f0c530e70c68874e244bdbc7bc003b9d003a8eeb32fc7750c7ab7bc56386fb0
+eab3bff09927931c6fd46b06fa904007311a79046ed1aae2a10558e6c01e879415b0
+56b7d2548e443d899c36cbf87ccca44f25b5bf5fe208e9e48ab848caa4a22f1561b1
+f5527d88b84feaa1bc7a6510e883cb24a0870aa517b9cca63410c8a7a868f8dcbb62
+0c4ed90903405a7117a86512fb384114829c5c6fb9732549480312f52dd81ac8976a
+861ab187b4eb385d92a6848b5d00c4ab6c4a340d14ae18c8ba65723426fa0554ab14
+f8a7902323145ca5169552cab3801d8cc62f03647255822f9c9b8ab360120d596f14
+7c2eae1c9adbea7c3b4953e8d4330e759a2aea211573aaacd8a879b5a63d7cad3aa2
+3fa5c425ca5bc728a842dd82180cd5b483c7b2ce056c20104f86e89a7639685a87a7
+50618824e9694a99a864e837d61456da7477f0c1b4380c5f8d401b951b1ccff6aeca
+4c86fe90a3d034bd9f51a810b2c085d75d41a4a2b7c28b108baf64d2c795d2292300
+065bd64257f5759b107da8ac999698803f2538c792a3a3cccfeba5cc57087cd2fb29
+7db007c4fa357a904b8791bdae8cbc997689a6b57e452ab4b07251075a8304e6cbdc
+0a8fba6656a2d42b24db8333325c6413c1896a0eec7b5110a838d2d7bf40c87bbd6a
+096a1525df8183e0e334d684ceac1013ff94070cc17a67b79fbc352a76728adeb169
+0ae7236decacf068cc85b68de2ba857b63b72f432f36f5a4fb99319e5200f8247a85
+48523b370793498827e9cb7a0239d7a461d849be6c598fbf5081ff79c19323128f10
+4419585f46b146d2d882378326b6b5031d563ce4f0473776304c6146d4c77ce78398
+34ac31ea4b47a33a740468005ca55715dc7a63da4973b13d22fc9b2c70255ab330dd
+6ab41ba414efab612699b8ca95b44a844ae4f86f3d87078d78c241a83b0bd2a87fd1
+bcff0a14552725f1aa426444cb6954c006d506dbe0a637238a085ac6c5f50b03410d
+0fc20b1ff2bb1ec55f3726547ee03e03986f9e1ab445680aa07a4dc1ac2598f8cf7b
+65a7e74ac0d0a78063371302a17e65d89eec1050a0023446d4c082629a59537bd531
+4f8d7142a2e6b80ab37f119b1027b8c3736722ade3bc112180736bbbff95bb85d408
+c7d9bec9b69ebef47a8d0755248b2f603653032839abc4756de884ac77081d846f15
+abb89adbbb190a7ed9c936100237f109732e523559a18ce0e84dc8fb0d6de1ab4720
+70e8f59c61b763279522b4a42ec5d1855434546628983058ba47e81ded719899f581
+459297be956185c42ca0497b10c912103313203479abcc04a21568b041032d321fc4
+6508de665ff3900383a65cdb0121303a29473957a1ec9991a102175062bc10b7cb98
+c6c5337f1115972931ba3de87795dacad7ba52cae56ff8688f16095b20118f84f936
+e989033bba296829bba71b6b93c602bf6632e2fab0b16c832e2c7fffd471a088596c
+43c4ea421b999304808a3f7d0934574b928298b50ae68926c125453a5614a372113a
+898e518be0d16a18f657b3984b6046baa4ec9630395b8fe8ab7f586e554110270b4c
+4e8594b641485a339be0220a98426859f9b9207137efa2302d3650bfd87893ac79cd
+31492ec68501305ee5e71126e532307a5936001879002b68749a5ccc851e776b6ae1
+a3e641283da815a354b61719c4be010268f1ae835b52281479da71010e6ab37de342
+b4bc9d4d493930c9893ec6547e74862cea4ed25163bd2424e6ca2e56263c33e937c5
+6b35e89bc068d9c343a00f7b9a717c276d724a8654a884984829bb1bb4dda99f0d0e
+0c8a800ff44739be3a86fc4b72788334aae59de68faf306fbee762106388b6b33606
+52cf131bfbd52887be30fd417f283cc22e354ab2655a63c5dec2ed30ea9c4ce33453
+8021cc6cba357e812e3129668f9221fd24f93815394394659c885b95a936856c7af7
+b28f41c2edb10e056c5b553c115fd663068c43fc605179182c00586e6e7a399cf531
+47fa9baf22618c88052f62121d23854353c3511b8ad8149d1493a4e8cc29f031bf39
+46079878c53b6960984865182b2af3c2cc2e49be80f3680d1808e41ac223e39bb874
+2baa23bef75ca0b472204c6a102be2cc5f8a49b6d7408aa1324104ac64108c94ec37
+cc2243a0240a09ba9d4ee373a76cce77bc97c2a85ff30893eca20a04fc4661bbbf2e
+5a9471d23ba359af1cc18bd26255b49a91aa863247d70133882b3d683628f97e6546
+86ab200e7147ca0b445fe87b614ee254a8f15313a94501420de238977b15aa11d27c
+fc45658db79791f3a5f52540a21a9ce3960472a129c4760418213c73724859578dc1
+a13d5e6bb9c1b365b1760d479aa6aaf73a64ec2c844c725691a11cb31b9ac2c973e5
+5389d04d80f80d14576614e69ab7cc73708367048159dd0693eee573fd4a08177815
+7c56399f2b78c0d19beaec40a75373005c4f75170cbf583b4d85ba1aec1e8c999fd1
+62c8d744289bcb8c1404a6e3e6ba6418cdbca81171c210418b176531ad76b443c8f2
+b03641a105b5bfc10aa249a9078be49a15f8284694c83a309a7e6a8d0cb2b80d732b
+0509b98470ad22b5c7baba86120bc5fb643eadc62d92ca327b00801c956f76b49de2
+19243761bd0083322d5334d396ad16354177aa6da7bc315a8aac668486bdc3606319
+6c6a58bd8a9775a40398f1a734e5608cd214981e0b3faa52488c98aa0d78b725523c
+9f21ad21218d5875a3cde5346eacc82b653ea28505a3a0c0ff5220c08a55c10cab0b
+97c6bf814461b0b740a9145bc52f134a8d273c6342189fc5687387d19228d2ace25b
+b3568536daa66ef0c05e60933c23262bbb22a55b302593f9495d98aaaf4ccc08da3c
+cee89f1515451a4cce34a3753b71341a155a9a2b248f7a745a31b834d7b7781c6f22
+0a18973133cfb29815815b70eb7ae46c1668ea22356c2d88a093b123af96a85d6b19
+0ac83054f2917c4418c751d6c2436a1f1dea6e5899228129aa281626a6a4bb51816e
+0201be9c075764507700b24347139ade6354e44c951e25846ef31314566027b9625b
+847f16a57ea7f4607492c5360047c6c0a6a5f5046c4295ef8913a2c1ba0b489f54c0
+924b25181e0c9196330aa67c7198f4c0e2f34c0f223d36da12711493824b02d1685f
+35946b3c296fb780830c955739656248f15df4796ec282c7b1e76411a50c558a355d
+053f03fbaca086789334aa15c769b2ec4afa112301c330fe35c2ba6990566775c361
+8f2ae2970301a3d1f8b29c559e58f8105412a82f17cc57a0454a9441fbe40311442d
+953325a63077b48b41d1e96235e82dde48cd1392b521814ae01a179ec41830330810
+5c54a814ab14670d056484f4aa3229e182c4b52abdd50f0c530e70c68874e244bdbc
+7bc003b9d003a8eeb32fc7750c7ab7bc56386fb0eab3bff09927931c6fd46b06fa90
+4007311a79046ed1aae2a10558e6c01e879415b056b7d2548e443d899c36cbf87ccc
+a44f25b5bf5fe208e9e48ab848caa4a22f1561b1f5527d88b84feaa1bc7a6510e883
+cb24a0870aa517b9cca63410c8a7a868f8dcbb620c4ed90903405a7117a86512fb38
+4114829c5c6fb9732549480312f52dd81ac8976a861ab187b4eb385d92a6848b5d00
+c4ab6c4a340d14ae18c8ba65723426fa0554ab14f8a7902323145ca5169552cab380
+1d8cc62f03647255822f9c9b8ab360120d596f147c2eae1c9adbea7c3b4953e8d433
+0e759a2aea211573aaacd8a879b5a63d7cad3aa23fa5c425ca5bc728a842dd82180c
+d5b483c7b2ce056c20104f86e89a7639685a87a750618824e9694a99a864e837d614
+56da7477f0c1b4380c5f8d401b951b1ccff6aeca4c86fe90a3d034bd9f51a810b2c0
+85d75d41a4a2b7c28b108baf64d2c795d2292300065bd64257f5759b107da8ac9996
+98803f2538c792a3a3cccfeba5cc57087cd2fb297db007c4fa357a904b8791bdae8c
+bc997689a6b57e452ab4b07251075a8304e6cbdc0a8fba6656a2d42b24db8333325c
+6413c1896a0eec7b5110a838d2d7bf40c87bbd6a096a1525df8183e0e334d684ceac
+1013ff94070cc17a67b79fbc352a76728adeb1690ae7236decacf068cc85b68de2ba
+857b63b72f432f36f5a4fb99319e5200f8247a8548523b370793498827e9cb7a0239
+d7a461d849be6c598fbf5081ff79c19323128f104419585f46b146d2d882378326b6
+b5031d563ce4f0473776304c6146d4c77ce7839834ac31ea4b47a33a740468005ca5
+5715dc7a63da4973b13d22fc9b2c70255ab330dd6ab41ba414efab612699b8ca95b4
+4a844ae4f86f3d87078d78c241a83b0bd2a87fd1bcff0a14552725f1aa426444cb69
+54c006d506dbe0a637238a085ac6c5f50b03410d0fc20b1ff2bb1ec55f3726547ee0
+3e03986f9e1ab445680aa07a4dc1ac2598f8cf7b65a7e74ac0d0a78063371302a17e
+65d89eec1050a0023446d4c082629a59537bd5314f8d7142a2e6b80ab37f119b1027
+b8c3736722ade3bc112180736bbbff95bb85d408c7d9bec9b69ebef47a8d0755248b
+2f603653032839abc4756de884ac77081d846f15abb89adbbb190a7ed9c936100237
+f109732e523559a18ce0e84dc8fb0d6de1ab472070e8f59c61b763279522b4a42ec5
+d1855434546628983058ba47e81ded719899f581459297be956185c42ca0497b10c9
+12103313203479abcc04a21568b041032d321fc46508de665ff3900383a65cdb0121
+303a29473957a1ec9991a102175062bc10b7cb98c6c5337f1115972931ba3de87795
+dacad7ba52cae56ff8688f16095b20118f84f936e989033bba296829bba71b6b93c6
+02bf6632e2fab0b16c832e2c7fffd471a088596c43c4ea421b999304808a3f7d0934
+574b928298b50ae68926c125453a5614a372113a898e518be0d16a18f657b3984b60
+46baa4ec9630395b8fe8ab7f586e554110270b4c4e8594b641485a339be0220a9842
+6859f9b9207137efa2302d3650bfd87893ac79cd31492ec68501305ee5e71126e532
+307a5936001879002b68749a5ccc851e776b6ae1a3e641283da815a354b61719c4be
+010268f1ae835b52281479da71010e6ab37de342b4bc9d4d493930c9893ec6547e74
+862cea4ed25163bd2424e6ca2e56263c33e937c56b35e89bc068d9c343a00f7b9a71
+7c276d724a8654a884984829bb1bb4dda99f0d0e0c8a800ff44739be3a86fc4b7278
+8334aae59de68faf306fbee762106388b6b3360652cf131bfbd52887be30fd417f28
+3cc22e354ab2655a63c5dec2ed30ea9c4ce334538021cc6cba357e812e3129668f92
+21fd24f93815394394
+ikmR:
+c4db7f001a35df4d16965edb7e9ff019bba08751659893c424e6bd84fe84c7c1
+pkRm: a222288b90ae67366248f7c9225517e169970ce6c6dc5120b9a9f28a32784c
+037107169577a8298a47d5d3bf5069177010c226b532d60685db0b714cab391fb811
+2a4807ccc9ca3f251ccf62a4e7099853e398e70774d8f5a7ae342ad0394b4bda1728
+4737534cc1ada577d2510eb9793991d8565c054e2f68ad0e7cb74bc864507950db31
+07148b777ce438f7260dada98d95936e6fc6aac9cac3f0fa93a9da2008751cbcf516
+921c1eb5ea4f1aa9969d130a774b75bb0997d08c773ef66bbd81b03dd80a5dbbbeb3
+123344b1809ccc9f48f7a8ac923ce2b166420c6bfa79b19fd0a71bf9a886e93bdab9
+c69d25aa2fe0a251591a3959550a7b0e63159630e98039f94be140479500b907dc1b
+ba856f7825591b43b5a330aa2f926efbfcb432e0b4ade7b5b2954d8867715b472acb
+50366f05c5b8352feed206614acb27a57c71e78f26b971baca1e86902de43973e4ba
+ac9256906ac0356a43ba5496c25b649e0d133111e6cef391b4fb3c061eba9b80b571
+0a0b5912fca10e83c758fc1b380118fc71ad3b450c81c7cd344c9ac04c3f4405cb4b
+db6a9b1c7616437899244f4ee42f907615386b8f2c06d09ba12c57ca50c7dcacf4f4
+7c2fe72993ba3f0b276b9036a96e5561524bad2ea25a19d93894106765488d1b542a
+a5c02d7ab299bb8757f3024b23b74b9e42a7dc013546a935855cc65bb8911a17b70c
+1051052286b33632e16494694b3aff651d09565d24638f14409545884741a1732ad4
+c558fb03a186b1f9bbb0324abe13239910f2c0dbc99de83449e079b58b97acfc555c
+92648fa049461b69886ca3a3796459a8e5203f81acf2fba0cafc9aa67728e681ae30
+0ac4222c1524a39b459ba089d177547ab90884599960bf34a3207b60b8358c19faa2
+1aae737c65131076f765b570101716c66609113da321109ba56914571f4ccc98a5a6
+f10918cc826d84d46964163ed1bc50f02c854efba825810f4c2106883957e89729d0
+c2524126a0c1bcce99e01d683999cf838d47ab8d5d1454c27698ef49217630b7ad22
+09b7d99b3f9290c7652a40d818a5767c110bc4d3697f2bf5bc02e247488456ec5491
+d15cc4d34b364e572b71089a649a8745f44f438b4052451830241d6c5ba408b90ce9
+64a68f6001cb43b0ef7623da8381302608f37174396285b8092d5c3c7169797d97b0
+0210e7687f55c07992c0fbc23614a701fb77bc10961db522abb4cab30b94741a8a98
+bf36a58137a712e771fc2a5d7c33b045299641305c3c95c9e26948aaa13b97a1084a
+3368c959a24f95584017be62267f2f18327e2933e131229cb6b4489a6171993024a8
+249a600604c3ba24341eeada93b7c4b86590409cd54744f11004b38605ea770d59ae
+14d57b3a604f68ab269ee1139d190b9b5941abd8bb24051b582007bd8397c15a6194
+2600c792ae7a205baaa18a8c68b1bca13f791169f9335ea029a75589490c5135ed03
+b64926685f49a69042bec058bc731a78be3c01ea9b66f51a69d6e19b2ba020409218
+f9f605597c2539062063d216de7b6a46f60f86bb71c0365979aaa4a0426c6ee4146d
+29778b4b38dbc43c8da580d98392a466c7c843acab5364e4b9962100089131236800
+22c81c3d74fca45f101799e439ca0786330566f9b5bebbc9166a7a13cce80a770f8f
+e552aa429956cd220caf8725c687d4c774769136ce295e58a0dc317f5b
+skRm: f81042c2e193aea5817330a906046cbae3481f2538b0721306cb4b4fe26047
+b64ac753695d6b5b256aae7ef455764b81ce2649817c3eeb1465050166a532c80d51
+361ce4ba9cbb6f48e718902c8b09365182db417ab0874907cf129102c9558113327b
+c6464edf3b48913b07e0138e7e0561b4699c538b77e896a905082b42e3c89d8656c4
+686ab3322ba8f7543bf0baceb7150dd916e45344e0344b057b6058967856e2a2d906
+a35ee008b214964a327be5dc429cdc0539c41b56675ee921c3acec9a6c101489e255
+38f2a5ae3568497a149d5a93ecd66d31597f9a2c0c997195c6e3a221b45b9aac134f
+28bd7805882c95abe65c3b824957f6d19ce84647ef32c441b160068c30ae47023e0c
+812122bee105759c18b53ee979f621c2d6f9bb90c8cfbcb3b2739cb1546b8d4f9778
+d7292783623d3fb67c1eb028d5170892f23deac32b1551865ac51ac93c87cca18be1
+b969c4fc9403c2516dc42077d6c7a7834935a926483058bf4200780550f7697d87e8
+32386270388a73bc449f3f1a9ae4dc91d63a779b77642e8240f5f146a6ea2d81b96b
+e1bc51e5420a85e49ab414b8324186a1527fe5ec737fd75f390c94155c705cb67302
+1037b14aca237a75168ab4511191e13437e6598f85fb63b4631cd5928ea4a8068e77
+27156a0d4bcc79e2cb438c3032ab5a91526a159a4aa080453f4344aa00da0e922576
+8b205dbfd27f2218c497717627d8a4fc7c4533a2c6f95746a116834f63aa6aeb0552
+10bd0d667cbae26a41aca710d7693dc539f6924526e924daca21cbfb8230191a83a0
+a275fc1202ac09c9258c07b03a311a2d895ac8e1f07b02ca635a43bfd38007b224c8
+f3ea55a920bda601b2fff56840b36ddaf65ffd02b21401786cca15d0289e8bf0399b
+e403ad293d57b56eaf3cb63184085766316ce5463b625e17072db448124d761a618b
+a633e544cbc6c7f5b29316b17d25a31dcf36c9d7b57348c3ade4866024637853ba76
+ef77bd510701dc69bbe220716c85cc08e2542394023d289a27d31447c0660e35068d
+ca513b45b8e317ad6c134284831ae34a221095473c13707311bd2a7389faa1878beb
+aa3b79858cc3cbe96c4b0c2613521a846d0932ad5cc01af189b1b73f9c67663b8c92
+db5c12764216d3a5b5cc9b5620f5cbb6023b4b25830337af7fba5443cc643182a8e2
+b0965387223deab59850cf6d90059632a3fbca1f05d86a98ab7c30d907d854237d73
+079d1a0f896450002ca003334808f98231c4b899c2245b0980b6275a6e644940c8a2
+8ef477881211c0329509f07b0e29b923c033c8ec899bfc3ea91936545002741c0d23
+b15eb3dbb718cace57d768a3fcad28262f1df643be1b2ee5098869cb1046cb15d10c
+9bf1a5a3000140c0823c68b79d90a3250f436cdba22261072dec64325e122b3cebc9
+3b6c0295a1472b259fd18bbd3257aff55109f3376a07c0454de30437c3c0fafa96ad
+202eab69c4c9d2844a73c0f9cb1da858479e6a6dc0b773ccb2945431427f709582b3
+1ece712f577a992e299e298c7b51988b5b09b3c46a6f4e30bad0a075ab6b9d425457
+181837806a1c87d7a42fc695f18977aeb95309287da4c16675884ac04092816c9571
+07169577a8298a47d5d3bf5069177010c226b532d60685db0b714cab391fb8112a48
+07ccc9ca3f251ccf62a4e7099853e398e70774d8f5a7ae342ad0394b4bda17284737
+534cc1ada577d2510eb9793991d8565c054e2f68ad0e7cb74bc864507950db310714
+8b777ce438f7260dada98d95936e6fc6aac9cac3f0fa93a9da2008751cbcf516921c
+1eb5ea4f1aa9969d130a774b75bb0997d08c773ef66bbd81b03dd80a5dbbbeb31233
+44b1809ccc9f48f7a8ac923ce2b166420c6bfa79b19fd0a71bf9a886e93bdab9c69d
+25aa2fe0a251591a3959550a7b0e63159630e98039f94be140479500b907dc1bba85
+6f7825591b43b5a330aa2f926efbfcb432e0b4ade7b5b2954d8867715b472acb5036
+6f05c5b8352feed206614acb27a57c71e78f26b971baca1e86902de43973e4baac92
+56906ac0356a43ba5496c25b649e0d133111e6cef391b4fb3c061eba9b80b5710a0b
+5912fca10e83c758fc1b380118fc71ad3b450c81c7cd344c9ac04c3f4405cb4bdb6a
+9b1c7616437899244f4ee42f907615386b8f2c06d09ba12c57ca50c7dcacf4f47c2f
+e72993ba3f0b276b9036a96e5561524bad2ea25a19d93894106765488d1b542aa5c0
+2d7ab299bb8757f3024b23b74b9e42a7dc013546a935855cc65bb8911a17b70c1051
+052286b33632e16494694b3aff651d09565d24638f14409545884741a1732ad4c558
+fb03a186b1f9bbb0324abe13239910f2c0dbc99de83449e079b58b97acfc555c9264
+8fa049461b69886ca3a3796459a8e5203f81acf2fba0cafc9aa67728e681ae300ac4
+222c1524a39b459ba089d177547ab90884599960bf34a3207b60b8358c19faa21aae
+737c65131076f765b570101716c66609113da321109ba56914571f4ccc98a5a6f109
+18cc826d84d46964163ed1bc50f02c854efba825810f4c2106883957e89729d0c252
+4126a0c1bcce99e01d683999cf838d47ab8d5d1454c27698ef49217630b7ad2209b7
+d99b3f9290c7652a40d818a5767c110bc4d3697f2bf5bc02e247488456ec5491d15c
+c4d34b364e572b71089a649a8745f44f438b4052451830241d6c5ba408b90ce964a6
+8f6001cb43b0ef7623da8381302608f37174396285b8092d5c3c7169797d97b00210
+e7687f55c07992c0fbc23614a701fb77bc10961db522abb4cab30b94741a8a98bf36
+a58137a712e771fc2a5d7c33b045299641305c3c95c9e26948aaa13b97a1084a3368
+c959a24f95584017be62267f2f18327e2933e131229cb6b4489a6171993024a8249a
+600604c3ba24341eeada93b7c4b86590409cd54744f11004b38605ea770d59ae14d5
+7b3a604f68ab269ee1139d190b9b5941abd8bb24051b582007bd8397c15a61942600
+c792ae7a205baaa18a8c68b1bca13f791169f9335ea029a75589490c5135ed03b649
+26685f49a69042bec058bc731a78be3c01ea9b66f51a69d6e19b2ba020409218f9f6
+05597c2539062063d216de7b6a46f60f86bb71c0365979aaa4a0426c6ee4146d2977
+8b4b38dbc43c8da580d98392a466c7c843acab5364e4b996210008913123680022c8
+1c3d74fca45f101799e439ca0786330566f9b5bebbc9166a7a13cce80a770f8fe552
+aa429956cd220caf8725c687d4c774769136ce295e58a0dc317f5bccc3d375a78e14
+343c5a12c1b8312b8acb5d5ea1e84abe5cacf6a71de0199943c4132b50e6eac9f550
+1f518ae1f515ff6a8a32cee3fd9bcafafd5f6a75b24814f81042c2e193aea5817330
+a906046cbae3481f2538b0721306cb4b4fe26047b64ac753695d6b5b256aae7ef455
+764b81ce2649817c3eeb1465050166a532c80d51361ce4ba9cbb6f48e718902c8b09
+365182db417ab0874907cf129102c9558113327bc6464edf3b48913b07e0138e7e05
+61b4699c538b77e896a905082b42e3c89d8656c4686ab3322ba8f7543bf0baceb715
+0dd916e45344e0344b057b6058967856e2a2d906a35ee008b214964a327be5dc429c
+dc0539c41b56675ee921c3acec9a6c101489e25538f2a5ae3568497a149d5a93ecd6
+6d31597f9a2c0c997195c6e3a221b45b9aac134f28bd7805882c95abe65c3b824957
+f6d19ce84647ef32c441b160068c30ae47023e0c812122bee105759c18b53ee979f6
+21c2d6f9bb90c8cfbcb3b2739cb1546b8d4f9778d7292783623d3fb67c1eb028d517
+0892f23deac32b1551865ac51ac93c87cca18be1b969c4fc9403c2516dc42077d6c7
+a7834935a926483058bf4200780550f7697d87e832386270388a73bc449f3f1a9ae4
+dc91d63a779b77642e8240f5f146a6ea2d81b96be1bc51e5420a85e49ab414b83241
+86a1527fe5ec737fd75f390c94155c705cb673021037b14aca237a75168ab4511191
+e13437e6598f85fb63b4631cd5928ea4a8068e7727156a0d4bcc79e2cb438c3032ab
+5a91526a159a4aa080453f4344aa00da0e9225768b205dbfd27f2218c497717627d8
+a4fc7c4533a2c6f95746a116834f63aa6aeb055210bd0d667cbae26a41aca710d769
+3dc539f6924526e924daca21cbfb8230191a83a0a275fc1202ac09c9258c07b03a31
+1a2d895ac8e1f07b02ca635a43bfd38007b224c8f3ea55a920bda601b2fff56840b3
+6ddaf65ffd02b21401786cca15d0289e8bf0399be403ad293d57b56eaf3cb6318408
+5766316ce5463b625e17072db448124d761a618ba633e544cbc6c7f5b29316b17d25
+a31dcf36c9d7b57348c3ade4866024637853ba76ef77bd510701dc69bbe220716c85
+cc08e2542394023d289a27d31447c0660e35068dca513b45b8e317ad6c134284831a
+e34a221095473c13707311bd2a7389faa1878bebaa3b79858cc3cbe96c4b0c261352
+1a846d0932ad5cc01af189b1b73f9c67663b8c92db5c12764216d3a5b5cc9b5620f5
+cbb6023b4b25830337af7fba5443cc643182a8e2b0965387223deab59850cf6d9005
+9632a3fbca1f05d86a98ab7c30d907d854237d73079d1a0f896450002ca003334808
+f98231c4b899c2245b0980b6275a6e644940c8a28ef477881211c0329509f07b0e29
+b923c033c8ec899bfc3ea91936545002741c0d23b15eb3dbb718cace57d768a3fcad
+28262f1df643be1b2ee5098869cb1046cb15d10c9bf1a5a3000140c0823c68b79d90
+a3250f436cdba22261072dec64325e122b3cebc93b6c0295a1472b259fd18bbd3257
+aff55109f3376a07c0454de30437c3c0fafa96ad202eab69c4c9d2844a73c0f9cb1d
+a858479e6a6dc0b773ccb2945431427f709582b31ece712f577a992e299e298c7b51
+988b5b09b3c46a6f4e30bad0a075ab6b9d425457181837806a1c87d7a42fc695f189
+77aeb95309287da4c16675884ac04092816c957107169577a8298a47d5d3bf506917
+7010c226b532d60685db0b714cab391fb8112a4807ccc9ca3f251ccf62a4e7099853
+e398e70774d8f5a7ae342ad0394b4bda17284737534cc1ada577d2510eb9793991d8
+565c054e2f68ad0e7cb74bc864507950db3107148b777ce438f7260dada98d95936e
+6fc6aac9cac3f0fa93a9da2008751cbcf516921c1eb5ea4f1aa9969d130a774b75bb
+0997d08c773ef66bbd81b03dd80a5dbbbeb3123344b1809ccc9f48f7a8ac923ce2b1
+66420c6bfa79b19fd0a71bf9a886e93bdab9c69d25aa2fe0a251591a3959550a7b0e
+63159630e98039f94be140479500b907dc1bba856f7825591b43b5a330aa2f926efb
+fcb432e0b4ade7b5b2954d8867715b472acb50366f05c5b8352feed206614acb27a5
+7c71e78f26b971baca1e86902de43973e4baac9256906ac0356a43ba5496c25b649e
+0d133111e6cef391b4fb3c061eba9b80b5710a0b5912fca10e83c758fc1b380118fc
+71ad3b450c81c7cd344c9ac04c3f4405cb4bdb6a9b1c7616437899244f4ee42f9076
+15386b8f2c06d09ba12c57ca50c7dcacf4f47c2fe72993ba3f0b276b9036a96e5561
+524bad2ea25a19d93894106765488d1b542aa5c02d7ab299bb8757f3024b23b74b9e
+42a7dc013546a935855cc65bb8911a17b70c1051052286b33632e16494694b3aff65
+1d09565d24638f14409545884741a1732ad4c558fb03a186b1f9bbb0324abe132399
+10f2c0dbc99de83449e079b58b97acfc555c92648fa049461b69886ca3a3796459a8
+e5203f81acf2fba0cafc9aa67728e681ae300ac4222c1524a39b459ba089d177547a
+b90884599960bf34a3207b60b8358c19faa21aae737c65131076f765b570101716c6
+6609113da321109ba56914571f4ccc98a5a6f10918cc826d84d46964163ed1bc50f0
+2c854efba825810f4c2106883957e89729d0c2524126a0c1bcce99e01d683999cf83
+8d47ab8d5d1454c27698ef49217630b7ad2209b7d99b3f9290c7652a40d818a5767c
+110bc4d3697f2bf5bc02e247488456ec5491d15cc4d34b364e572b71089a649a8745
+f44f438b4052451830241d6c5ba408b90ce964a68f6001cb43b0ef7623da83813026
+08f37174396285b8092d5c3c7169797d97b00210e7687f55c07992c0fbc23614a701
+fb77bc10961db522abb4cab30b94741a8a98bf36a58137a712e771fc2a5d7c33b045
+299641305c3c95c9e26948aaa13b97a1084a3368c959a24f95584017be62267f2f18
+327e2933e131229cb6b4489a6171993024a8249a600604c3ba24341eeada93b7c4b8
+6590409cd54744f11004b38605ea770d59ae14d57b3a604f68ab269ee1139d190b9b
+5941abd8bb24051b582007bd8397c15a61942600c792ae7a205baaa18a8c68b1bca1
+3f791169f9335ea029a75589490c5135ed03b64926685f49a69042bec058bc731a78
+be3c01ea9b66f51a69d6e19b2ba020409218f9f605597c2539062063d216de7b6a46
+f60f86bb71c0365979aaa4a0426c6ee4146d29778b4b38dbc43c8da580d98392a466
+c7c843acab5364e4b996210008913123680022c81c3d74fca45f101799e439ca0786
+330566f9b5bebbc9166a7a13cce80a770f8fe552aa429956cd220caf8725c687d4c7
+74769136ce295e58a0dc317f5bccc3d375a78e14343c5a12c1b8312b8acb5d5ea1e8
+4abe5cacf6a71de0199943c4132b50e6eac9f5501f518ae1f515ff6a8a32cee3fd9b
+cafafd5f6a75b24814
+enc: 5db1665b81e7647c2656152519bdbbe8312772f5f32fc58c0a74024bd038894
+260551e91e2718280855338e6a34d0c47f812f639207a5beade523e95e5989221bf4
+5b4e43332609c9c85a14b94b13df6eaff353c2608b5f04e4507fbb71e1985a67acd8
+8df0057da49f8edb852e7611b6404dfe0739f4ef9032e615c0789b72471c8a3abc46
+b421d3834c4dde4d3010664fe0ff5302c769e443c5977853513f9378007e403768d2
+cff2cd875972c1651a19b5a9c8a29491db6f8fb9e4359068351e5f09599dd8244cb2
+62d55b68e7db41981b95be725630f2416b9614f787fb3b62f29153773e106957f951
+aa2ef3e7b1e19922800b9baafccd875a99d0c4d3f4b8645b8bce918a4f312435d57c
+3206503ab266e54ea75f1588ec22db94444f29bea3a69f26a1151458a0f2c1da2154
+128c6531a046bb9e5aebb910809ffad5a10dcf77422d9ff055e8ca8f7a0a3586ea65
+76711286f325f5de352162057097ef4c051a454da4a7023e0bf4e80d6af328b05398
+41b8d54f4188471bb7690b8e33da8feba802f0ea1893aaa57f688e0f59b508e9b81c
+772d9b4886fdc19832a1b801e15c5e6615a1442126b349affbe8eb1c46d00b54b7af
+16f0c6c2d2c3f8b17cb64816a345a02ced0b3d15a6f0d09a73873ae661a554f37a40
+4c1e7cef1b51cc34b5781c998cfaacae878710193b5a30fbe7fdda3663092bd82b3f
+4912f0efd266230f4120c656411cc56370a9a5e20a205a69480fee028377abd1a797
+7cf46c6e676a77c31d8a385902f1912d2e1a96f12d8d2bf421a6adabeba182b859a3
+7468b1a33f9cd39a4b7dea2bc4a041b03d203d0ced466896474de3a2cc4992dfa131
+29f51aae78e38fa3ce216e7dbd9c4dd928d522af19eb25be0ab6ee25da981267a172
+38ec05d82207184c4bf252fb488b81946a18326f3dfcc8d5d15f3b0f620374a688d9
+b492a78d939b19842a6997199fb4a7eb686f39b7761c622984323b2b10e7485372a5
+e8fd91ef3871107f9592d4dfadf96a103e7208827a495f2534398437eaba1e5014ac
+c363d01ba6de8544c9573ae506b6cf64ff1bbec1885c224d01562364e8a56e69ae6f
+715882f133211ca718a00416914c3661d0e6b20fdb3c90e3a2b56d0043e211bd02a3
+1a6857db317edbce537c56ec0b23135a5f84ed8ad4b78e1023fdf28be6e18c5d6e12
+45d90771041d093ef285df1a7b5cca67e8b4f2f252d92894767462df91de1407dc95
+83c89309c330b5937540b5bf58c3b311c995b7d4a4199fb709bc0187fd1d78528cf6
+f2ebb0a63b2f51348050730d1d3764375ee533b26df5dc064b7279514208aef6b989
+8cdc41c0a3fa7c2cf896b7d863e62371b425df236235f276002ec8393bbef974afa8
+90c5c581b71e03a85bf7246792909ee12a394801f815fd7d040a5eff2a58daa0bd4f
+1670334c6f98e45c4a3c6d29a680dc1188fe47a23e53ed8323c73c51e8f9eda88850
+69be6d5d29d4eaa800a0c6ebedd27a4df1b8240761099904ec12e6b81d491ac5a929
+50709c728ccecbd1c5b318cddf101859e37b0ab9e4dfb5d6ff2bf264b24a270a8b2f
+9
+shared_secret: b45aab63e017e342d0014e510647b152cc8a8bc80d2de268981a9
+26f489b95ae2cd72b3744f39a24995a1a7f105fd58af13b13324333c666af99bb69c
+f08590b
+key_schedule_context: 009f749a195d1c8b3eaa8d5c3f571dc7231aafbbc0405e
+4b484738352667c484867584e32e844cdf74d17b4ee224cc521bbc8bed221f21f34f
+8ccc9842772686cb
+secret:
+619cc6dd4220523ae6782463256473cd8c2a06b3823cb0a7a4a65cf1a257c9ee
+key: 8733d53ec055a7b89258377919e75c84
+base_nonce: 198d78ed008e95d54e6668a6
+exporter_secret:
+e9b124bfefd9f7d6d2ca509da122f48a1a764204fb3834c4cac5c46480023649
+</pre><a href="#appendix-B.1.1-1" class="pilcrow">¶</a>
+</div>
+<div id="encryptions">
+<section id="appendix-B.1.1.1">
+            <h5 id="name-encryptions">
+<a href="#appendix-B.1.1.1" class="section-number selfRef">B.1.1.1. </a><a href="#name-encryptions" class="section-name selfRef">Encryptions</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-B.1.1.1-1">
+<pre>
+sequence number: 0
+pt:
+546f2074686520756e6976657273616c206465706c6f796d656e74206f6620505143
+aad: 436f756e742d30
+nonce: 198d78ed008e95d54e6668a6
+ct: 1d1cbced6ce357c113fcb81529363592df73cb9b5b0179cc1935c38028fdd0dd
+9d848e0d598329b928f917d8cca3e6be5d20
+
+sequence number: 1
+pt:
+546f2074686520756e6976657273616c206465706c6f796d656e74206f6620505143
+aad: 436f756e742d31
+nonce: 198d78ed008e95d54e6668a7
+ct: 98b1b9f547622e2ae37a308f0c6664d2c1bbfb73a0e0f564aea7701a2958613f
+bb87ca45b16f2cc4bedbbf548f12f64534e2
+
+sequence number: 2
+pt:
+546f2074686520756e6976657273616c206465706c6f796d656e74206f6620505143
+aad: 436f756e742d32
+nonce: 198d78ed008e95d54e6668a4
+ct: 97760602220afd15e23b787227a3838af94219f97343c3d8e9b28abff21c3d7c
+b240c9faea894c65f401ecbce9d09256370d
+
+sequence number: 4
+pt:
+546f2074686520756e6976657273616c206465706c6f796d656e74206f6620505143
+aad: 436f756e742d34
+nonce: 198d78ed008e95d54e6668a2
+ct: 990c3b27b63b4166b184d36ac97e516b53afe29e91b92f83073d74aca5e588d3
+1891ff2932fd2e29da3addb660a160ec8d30
+
+sequence number: 255
+pt:
+546f2074686520756e6976657273616c206465706c6f796d656e74206f6620505143
+aad: 436f756e742d323535
+nonce: 198d78ed008e95d54e666859
+ct: f78e8c2f6cac9a1e4e4e8f50d5e9f003bbc2cc8f56377dc2dd311bf66d26849b
+a3321eda4e5ab5803525379d90585b672b06
+
+sequence number: 256
+pt:
+546f2074686520756e6976657273616c206465706c6f796d656e74206f6620505143
+aad: 436f756e742d323536
+nonce: 198d78ed008e95d54e6669a6
+ct: f3dfdf112aaa7c9171cae4a24e19cccdd5d1d9829a2a60d26fe5a9ae6b97750d
+c5f90ae9c3702ee86c9b9b3a36aaa725885a
+</pre><a href="#appendix-B.1.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="exported-values">
+<section id="appendix-B.1.1.2">
+            <h5 id="name-exported-values">
+<a href="#appendix-B.1.1.2" class="section-number selfRef">B.1.1.2. </a><a href="#name-exported-values" class="section-name selfRef">Exported Values</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-B.1.1.2-1">
+<pre>
+exporter_context:
+L: 32
+exported_value:
+b21df4a6902376312fcdf58db6046f53ddd44d48ae7e58fdea60957cc379fa93
+
+exporter_context: 00
+L: 32
+exported_value:
+d2e5288f872c9936d79bd56c578fb65c2998c2a646b844e61e2cf7749f298690
+
+exporter_context: 54657374436f6e74657874
+L: 32
+exported_value:
+95239ef81d885b1466d05b0a29918972214f0f9078ea7f0169b574d4580272e9
+</pre><a href="#appendix-B.1.1.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Bas Westerbaan</span></div>
+<div dir="auto" class="left"><span class="org">Cloudflare</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:bas@cloudflare.com" class="email">bas@cloudflare.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Christopher A. Wood</span></div>
+<div dir="auto" class="left"><span class="org">Cloudflare</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:caw@heapingbits.net" class="email">caw@heapingbits.net</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
