@@ -30,6 +30,10 @@ author:
     fullname: Bas Westerbaan
     organization: Cloudflare
     email: bas@cloudflare.com
+ -
+    fullname: Christopher A. Wood
+    organization: Cloudflare
+    email: caw@heapingbits.net
 
 
 normative:
