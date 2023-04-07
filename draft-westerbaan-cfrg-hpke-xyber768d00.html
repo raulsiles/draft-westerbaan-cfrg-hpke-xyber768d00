@@ -1410,10 +1410,10 @@ HKDF(concat(ss1, ss2, enc1, enc2)).
 </div>
 <p id="section-4-4">In the present case, DHKEM(X25519, -) and Kyber768Draft00 already mix in
 the respective cipher texts into their shared secrets. Thus we can
-forego mixing in the cipher texts a second time.<a href="#section-4-4" class="pilcrow">¶</a></p>
+forgo mixing in the cipher texts a second time.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <p id="section-4-5">Furthermore, in HPKE, the shared secret is never used directly, but
 passed through HKDF (via KeySchedule), and thus we can
-forego the call to HKDF as well.<a href="#section-4-5" class="pilcrow">¶</a></p>
+forgo the call to HKDF as well.<a href="#section-4-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
