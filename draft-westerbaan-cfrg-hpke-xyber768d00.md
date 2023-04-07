@@ -246,11 +246,11 @@ the cipher texts, such as, assuming fixed-length cipher texts and shared secrets
 
 In the present case, DHKEM(X25519, -) and Kyber768Draft00 already mix in
 the respective cipher texts into their shared secrets. Thus we can
-forego mixing in the cipher texts a second time.
+forgo mixing in the cipher texts a second time.
 
 Furthermore, in HPKE, the shared secret is never used directly, but
 passed through HKDF (via KeySchedule), and thus we can
-forego the call to HKDF as well.
+forgo the call to HKDF as well.
 
 # IANA Considerations
 
