@@ -67,13 +67,14 @@ Table of Contents
 
    1.  Introduction
      1.1.  Motivation
-     1.2.  No authenticated modes
+     1.2.  Not an authenticated KEM
    2.  Conventions and Definitions
    3.  Construction
      3.1.  SerializePublicKey and DeserializePublicKey
      3.2.  SerializePrivateKey and DeserializePrivateKey
      3.3.  DeriveKeyPair
      3.4.  Encap and Decap
+     3.5.  AuthEncap and AuthDecap
    4.  Security Considerations
    5.  IANA Considerations
    6.  References
@@ -97,11 +98,11 @@ Table of Contents
    interoperability of early implementations, this document specifies a
    preliminary hybrid post-quantum key agreement.
 
-1.2.  No authenticated modes
+1.2.  Not an authenticated KEM
 
    Kyber is a plain KEM that does not support the static-ephemeral key
-   exchange that allows Diffie-Hellman based KEMs their authenticated
-   modes.
+   exchange that allows HPKE based on Diffie-Hellman based KEMs its
+   (optional) authenticated modes.
 
 2.  Conventions and Definitions
 
@@ -228,6 +229,11 @@ Table of Contents
      ss1 = DHKEM.Decap(enc1, skA)
      ss2 = Kyber768Draft00.Decap(enc2, skB)
      return concat(ss1, ss2)
+
+3.5.  AuthEncap and AuthDecap
+
+   X25519Kyber768Draft00 is not an authenticeted KEM and does not
+   support AuthEncap() or AuthDecap(), see Section 1.2.
 
 4.  Security Considerations
 

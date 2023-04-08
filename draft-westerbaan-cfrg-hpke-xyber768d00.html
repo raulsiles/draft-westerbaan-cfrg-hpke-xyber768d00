@@ -1164,7 +1164,7 @@ of HPKE.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-motivation" class="internal xref">Motivation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-no-authenticated-modes" class="internal xref">No authenticated modes</a></p>
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-not-an-authenticated-kem" class="internal xref">Not an authenticated KEM</a></p>
 </li>
             </ul>
 </li>
@@ -1185,6 +1185,9 @@ of HPKE.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
                 <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-encap-and-decap" class="internal xref">Encap and Decap</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-authencap-and-authdecap" class="internal xref">AuthEncap and AuthDecap</a></p>
 </li>
             </ul>
 </li>
@@ -1252,15 +1255,15 @@ To promote interoperability of early implementations,
     this document specifies a preliminary hybrid post-quantum key agreement.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="no-authenticated-modes">
+<div id="S-notauth">
 <section id="section-1.2">
-        <h3 id="name-no-authenticated-modes">
-<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-no-authenticated-modes" class="section-name selfRef">No authenticated modes</a>
+        <h3 id="name-not-an-authenticated-kem">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-not-an-authenticated-kem" class="section-name selfRef">Not an authenticated KEM</a>
         </h3>
 <p id="section-1.2-1">Kyber is a plain KEM that does not
 support the static-ephemeral key exchange
-that allows Diffie-Hellman based KEMs
-their authenticated modes.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+that allows HPKE based on Diffie-Hellman based KEMs
+its (optional) authenticated modes.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1416,6 +1419,16 @@ def Decap(enc, skR):
   return concat(ss1, ss2)
 </pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
+</section>
+</div>
+<div id="authencap-and-authdecap">
+<section id="section-3.5">
+        <h3 id="name-authencap-and-authdecap">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-authencap-and-authdecap" class="section-name selfRef">AuthEncap and AuthDecap</a>
+        </h3>
+<p id="section-3.5-1">X25519Kyber768Draft00 is not an authenticeted KEM
+and does not support AuthEncap() or AuthDecap(),
+see <a href="#S-notauth" class="auto internal xref">Section 1.2</a>.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
