@@ -105,6 +105,13 @@ There is a desire to deploy post-quantum cryptography earlier than that.
 To promote interoperability of early implementations,
     this document specifies a preliminary hybrid post-quantum key agreement.
 
+## No authenticated modes
+
+Kyber is a plain KEM that does not
+support the static-ephemeral key exchange
+that allows Diffie-Hellman based KEMs
+their authenticated modes.
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
@@ -305,6 +312,8 @@ for their input.
 ## Since draft-westerbaan-cfrg-hpke-xyber768d00-00
 
 - Add acknowledgements.
+
+- Elaborate on missing authenticated modes.
 
 # Test Vectors
 
