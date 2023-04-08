@@ -5,7 +5,7 @@
 Crypto Forum                                            B. E. Westerbaan
 Internet-Draft                                                C. A. Wood
 Intended status: Informational                                Cloudflare
-Expires: 9 October 2023                                     7 April 2023
+Expires: 10 October 2023                                    8 April 2023
 
 
          X25519Kyber768Draft00 hybrid post-quantum KEM for HPKE
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 October 2023.
+   This Internet-Draft will expire on 10 October 2023.
 
 Copyright Notice
 
@@ -67,6 +67,7 @@ Table of Contents
 
    1.  Introduction
      1.1.  Motivation
+     1.2.  No authenticated modes
    2.  Conventions and Definitions
    3.  Construction
      3.1.  SerializePublicKey and DeserializePublicKey
@@ -78,11 +79,13 @@ Table of Contents
    6.  References
      6.1.  Normative References
      6.2.  Informative References
-   Appendix A.  Change log
-   Appendix B.  Test Vectors
-     B.1.  DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256,
+   Appendix A.  Acknowledgements
+   Appendix B.  Change log
+     B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
+   Appendix C.  Test Vectors
+     C.1.  DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256,
            AES-128-GCM
-       B.1.1.  Base Setup Information
+       C.1.1.  Base Setup Information
    Authors' Addresses
 
 1.  Introduction
@@ -93,6 +96,12 @@ Table of Contents
    deploy post-quantum cryptography earlier than that.  To promote
    interoperability of early implementations, this document specifies a
    preliminary hybrid post-quantum key agreement.
+
+1.2.  No authenticated modes
+
+   Kyber is a plain KEM that does not support the static-ephemeral key
+   exchange that allows Diffie-Hellman based KEMs their authenticated
+   modes.
 
 2.  Conventions and Definitions
 
@@ -322,21 +331,32 @@ Table of Contents
               March 2023, <https://datatracker.ietf.org/doc/html/draft-
               tls-westerbaan-xyber768d00-02>.
 
-Appendix A.  Change log
+Appendix A.  Acknowledgements
+
+   The authors would like to thank P.  Kampanakis, I.  Liusvaara, T.
+   Wiggers, and S.  Farrell for their input.
+
+Appendix B.  Change log
 
       *RFC Editor's Note:* Please remove this section prior to
       publication of a final version of this document.
 
-Appendix B.  Test Vectors
+B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
+
+   *  Add acknowledgements.
+
+   *  Elaborate on missing authenticated modes.
+
+Appendix C.  Test Vectors
 
    This section contains test vectors formatted similary to that which
    are found in [RFC9180], except that it only contains vectors for the
    base mode of operation.
 
-B.1.  DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256, AES-
+C.1.  DHKEM(X25519, HKDF-SHA256)+Kyber768Draft00, HKDF-SHA256, AES-
       128-GCM
 
-B.1.1.  Base Setup Information
+C.1.1.  Base Setup Information
 
    mode: 0
    kem_id: 48
@@ -750,7 +770,7 @@ B.1.1.  Base Setup Information
    exporter_secret:
    e9b124bfefd9f7d6d2ca509da122f48a1a764204fb3834c4cac5c46480023649
 
-B.1.1.1.  Encryptions
+C.1.1.1.  Encryptions
 
    sequence number: 0
    pt:
@@ -800,7 +820,7 @@ B.1.1.1.  Encryptions
    ct: f3dfdf112aaa7c9171cae4a24e19cccdd5d1d9829a2a60d26fe5a9ae6b97750d
    c5f90ae9c3702ee86c9b9b3a36aaa725885a
 
-B.1.1.2.  Exported Values
+C.1.1.2.  Exported Values
 
    exporter_context:
    L: 32
