@@ -105,12 +105,12 @@ There is a desire to deploy post-quantum cryptography earlier than that.
 To promote interoperability of early implementations,
     this document specifies a preliminary hybrid post-quantum key agreement.
 
-## No authenticated modes
+## Not an authenticated KEM {#S-notauth}
 
 Kyber is a plain KEM that does not
 support the static-ephemeral key exchange
-that allows Diffie-Hellman based KEMs
-their authenticated modes.
+that allows HPKE based on Diffie-Hellman based KEMs
+its (optional) authenticated modes.
 
 # Conventions and Definitions
 
@@ -244,6 +244,12 @@ def Decap(enc, skR):
   ss2 = Kyber768Draft00.Decap(enc2, skB)
   return concat(ss1, ss2)
 ~~~
+
+## AuthEncap and AuthDecap
+
+X25519Kyber768Draft00 is not an authenticeted KEM
+and does not support AuthEncap() or AuthDecap(),
+see {{S-notauth}}.
 
 # Security Considerations
 
