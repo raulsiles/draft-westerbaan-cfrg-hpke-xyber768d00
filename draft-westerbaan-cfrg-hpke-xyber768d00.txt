@@ -82,7 +82,8 @@ Table of Contents
      6.2.  Informative References
    Appendix A.  Acknowledgements
    Appendix B.  Change log
-     B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
+     B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
+     B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
    Appendix C.  Test Vectors
      C.1.  Base Setup Information
        C.1.1.  Encryptions
@@ -347,7 +348,11 @@ Appendix B.  Change log
       *RFC Editor's Note:* Please remove this section prior to
       publication of a final version of this document.
 
-B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
+B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
+
+   *  Corrected test vectors.
+
+B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
 
    *  Add acknowledgements.
 
