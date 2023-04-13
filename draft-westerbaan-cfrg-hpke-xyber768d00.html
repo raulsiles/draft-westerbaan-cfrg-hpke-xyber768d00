@@ -1057,7 +1057,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Westerbaan &amp; Wood</td>
-<td class="center">Expires 14 October 2023</td>
+<td class="center">Expires 15 October 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1070,12 +1070,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-westerbaan-cfrg-hpke-xyber768d00-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-04-12" class="published">12 April 2023</time>
+<time datetime="2023-04-13" class="published">13 April 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-10-14">14 October 2023</time></dd>
+<dd class="expires"><time datetime="2023-10-15">15 October 2023</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1131,7 +1131,7 @@ of HPKE.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 October 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 October 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1393,9 +1393,13 @@ def DeriveKeyPair(ikm):
 <p id="section-3.3-3">DHKEM.DeriveKeyPair() is DeriveKeyPair() defined for DHKEM
 in <span><a href="https://rfc-editor.org/rfc/rfc9180#section-7.1.3" class="relref">Section 7.1.3</a> of [<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>. Kyber768Draft00.DeriveKeyPair() is the key
 generation as defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-cfrg-schwabe-kyber-02#section-11.1" class="relref">Section 11.1</a> of [<a href="#KYBER" class="cite xref">KYBER</a>]</span>.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">ikm <span class="bcp14">SHOULD</span> be at least 32 octets in length.
+<p id="section-3.3-4">The suite_id used implicitly in LabeledExtract() and LabeledExpand() on
+lines 2 and 3, is derived from the KEM identifier of the hybrid (0x0030).<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">The suite_id used implicitly in LabeledExpand() and LabeledExtract()
+within DHKEM.DeriveKeyPair() is, is the KEM identifier of DHKEM (0x0020).<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.3-6">ikm <span class="bcp14">SHOULD</span> be at least 32 octets in length.
 (This is contrary to <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> which stipulates it should be
-at least Nsk=2432 octets in length.)<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+at least Nsk=2432 octets in length.)<a href="#section-3.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="encap-and-decap">
@@ -1425,6 +1429,9 @@ def Decap(enc, skR):
   return concat(ss1, ss2)
 </pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
+<p id="section-3.4-3">The suite_id used implicitly in the LabeledExtract() and LabeledExpand()
+within DHKEM.Encap() and DHKEM.Decap() is the one derived from the KEM id
+of DHKEM (0x0020).<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authencap-and-authdecap">
@@ -1472,7 +1479,7 @@ forgo the call to HKDF as well.<a href="#section-4-5" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-5-2">
         <dt id="section-5-2.1">Value:</dt>
         <dd style="margin-left: 1.5em" id="section-5-2.2">
-          <p id="section-5-2.2.1">0x30 (please)<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-5-2.2.1">0x0030 (please)<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-5-2.3">KEM:</dt>
@@ -1603,6 +1610,8 @@ final version of this document.<a href="#appendix-B-1.1.1" class="pilcrow">¶</a
         </h3>
 <ul class="normal">
 <li class="normal" id="appendix-B.1-1.1">Corrected test vectors.<a href="#appendix-B.1-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="appendix-B.1-1.2">Clarify correct value of implicit suite_id.<a href="#appendix-B.1-1.2" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>
