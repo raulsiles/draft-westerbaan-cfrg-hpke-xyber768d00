@@ -221,7 +221,7 @@ The suite_id used implicitly in LabeledExtract() and LabeledExpand() on
 lines 2 and 3, is derived from the KEM identifier of the hybrid (0x0030).
 
 The suite_id used implicitly in LabeledExpand() and LabeledExtract()
-within DHKEM.DeriveKeyPair() is, is the KEM identifier of DHKEM (0x0020).
+within DHKEM.DeriveKeyPair() is the KEM identifier of DHKEM (0x0020).
 
 ikm SHOULD be at least 32 octets in length.
 (This is contrary to {{RFC9180}} which stipulates it should be
