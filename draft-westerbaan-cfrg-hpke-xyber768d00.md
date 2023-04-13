@@ -217,6 +217,12 @@ DHKEM.DeriveKeyPair() is DeriveKeyPair() defined for DHKEM
 in {{Section 7.1.3 of RFC9180}}. Kyber768Draft00.DeriveKeyPair() is the key
 generation as defined in {{Section 11.1 of KYBER}}.
 
+The suite_id used implicitly in LabeledExtract() and LabeledExpand() on
+lines 2 and 3, is derived from the KEM identifier of the hybrid (0x0030).
+
+The suite_id used implicitly in LabeledExpand() and LabeledExtract()
+within DHKEM.DeriveKeyPair() is, is the KEM identifier of DHKEM (0x0020).
+
 ikm SHOULD be at least 32 octets in length.
 (This is contrary to {{RFC9180}} which stipulates it should be
 at least Nsk=2432 octets in length.)
@@ -244,6 +250,10 @@ def Decap(enc, skR):
   ss2 = Kyber768Draft00.Decap(enc2, skB)
   return concat(ss1, ss2)
 ~~~
+
+The suite_id used implicitly in the LabeledExtract() and LabeledExpand()
+within DHKEM.Encap() and DHKEM.Decap() is the one derived from the KEM id
+of DHKEM (0x0020).
 
 ## AuthEncap and AuthDecap
 
@@ -276,7 +286,7 @@ This document requests/registers a new entry to the "HPKE KEM Identifiers"
  registry.
 
  Value:
- : 0x30 (please)
+ : 0x0030 (please)
 
  KEM:
  : X25519Kyber768Draft00
@@ -318,6 +328,8 @@ for their input.
 ## Since draft-westerbaan-cfrg-hpke-xyber768d00-01
 
 - Corrected test vectors.
+
+- Clarify correct value of implicit suite_id.
 
 ## Since draft-westerbaan-cfrg-hpke-xyber768d00-00
 
