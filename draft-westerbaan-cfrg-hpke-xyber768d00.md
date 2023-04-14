@@ -346,10 +346,10 @@ This section contains test vectors formatted similary to that
 which are found in {{RFC9180}}, with two changes.
 First, we only provide vectors for the non-authenticated modes of operation.
 Secondly, as Kyber encapsulation does not involve an ephemeral keypair,
-we omit the idmE, skEm, pkEm entries and provide an iem entry instead.
-The value of iem is the randomness used to encapsulate.
+we omit the idmE, skEm, pkEm entries and provide an ier entry instead.
+The value of ier is the randomness used to encapsulate.
 To wit: the ephemeral X25519 keypair used in DHKEM.Encap()
-is DHKEM.DeriveKeyPair(iem[0:32]) and iem[32:64]
+is DHKEM.DeriveKeyPair(ier[0:32]) and ier[32:64]
 is the seed that is fed to H in the first step of Kyber
 encapsulation {{KYBER}}.
 
@@ -472,7 +472,7 @@ ec205e757932bcc717b99b7df7123500f3bcc660c080093b3fbac56ff51b9c3b037f
 76e3f43c0e46b5588cf617f4de85044390a9947daacba87cd5137b60651b30bf805d
 a1597faef1bc8b2645cda273144c4af1d13eaa2ad9101c7b58b14601aff81754afc7
 76f8b7f7b9324d420b66706b96ea7f99f8fa11bed3
-iem: 35b8cc873c23dc62b8d260169afa2f75ab916a58d974918835d25e6a435085b
+ier: 35b8cc873c23dc62b8d260169afa2f75ab916a58d974918835d25e6a435085b
 2badfd6dfaac359a5efbb7bcc4b59d538df9a04302e10c8bc1cbf1a0b3a5120ea
 enc: 1d06980e46fd3842db6b87226231eedd2cc9684ee98a1d9d902bd9300e2c4d4
 1b64fba47a50fe32dd0df3b0a75801c11022cd98a6ff5a83a8472ade82bdd6f1e8a6
@@ -708,7 +708,7 @@ ec205e757932bcc717b99b7df7123500f3bcc660c080093b3fbac56ff51b9c3b037f
 76e3f43c0e46b5588cf617f4de85044390a9947daacba87cd5137b60651b30bf805d
 a1597faef1bc8b2645cda273144c4af1d13eaa2ad9101c7b58b14601aff81754afc7
 76f8b7f7b9324d420b66706b96ea7f99f8fa11bed3
-iem: 35b8cc873c23dc62b8d260169afa2f75ab916a58d974918835d25e6a435085b
+ier: 35b8cc873c23dc62b8d260169afa2f75ab916a58d974918835d25e6a435085b
 2badfd6dfaac359a5efbb7bcc4b59d538df9a04302e10c8bc1cbf1a0b3a5120ea
 psk:
 7f9c2ba4e88f827d616045507605853ed73b8093f6efbc88eb1a6eacfa66ef26
