@@ -346,7 +346,7 @@ This section contains test vectors formatted similary to that
 which are found in {{RFC9180}}, with two changes.
 First, we only provide vectors for the non-authenticated modes of operation.
 Secondly, as Kyber encapsulation does not involve an ephemeral keypair,
-we omit the idmE, skEm, pkEm entries and provide an ier entry instead.
+we omit the ikmE, skEm, pkEm entries and provide an ier entry instead.
 The value of ier is the randomness used to encapsulate.
 To wit: the ephemeral X25519 keypair used in DHKEM.Encap()
 is DHKEM.DeriveKeyPair(ier[0:32]) and ier[32:64]
