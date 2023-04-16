@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-04-11T00:37:51.166659+00:00",
+  "timestamp": "2023-04-16T00:38:42.040569+00:00",
   "repo": "bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00",
   "labels": [
     {
@@ -86,16 +86,24 @@
       "id": "I_kwDOJTAvtM5i6tm9",
       "title": "Add test vectors for PSK mode",
       "url": "https://github.com/bwesterb/draft-westerbaan-cfrg-hpke-xyber768d00/issues/5",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bwesterb",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "As suggested by @csosto-pk",
       "createdAt": "2023-04-08T15:35:40Z",
-      "updatedAt": "2023-04-08T15:35:40Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2023-04-14T19:10:09Z",
+      "closedAt": "2023-04-14T19:10:09Z",
+      "comments": [
+        {
+          "author": "bwesterb",
+          "authorAssociation": "OWNER",
+          "body": "Done.",
+          "createdAt": "2023-04-14T19:10:09Z",
+          "updatedAt": "2023-04-14T19:10:09Z"
+        }
+      ]
     },
     {
       "number": 6,
