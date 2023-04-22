@@ -5,7 +5,7 @@
 Crypto Forum                                            B. E. Westerbaan
 Internet-Draft                                                C. A. Wood
 Intended status: Informational                                Cloudflare
-Expires: 16 October 2023                                   14 April 2023
+Expires: 24 October 2023                                   22 April 2023
 
 
          X25519Kyber768Draft00 hybrid post-quantum KEM for HPKE
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 October 2023.
+   This Internet-Draft will expire on 24 October 2023.
 
 Copyright Notice
 
