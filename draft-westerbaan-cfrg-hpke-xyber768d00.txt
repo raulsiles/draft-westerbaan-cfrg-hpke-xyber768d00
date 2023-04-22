@@ -82,9 +82,8 @@ Table of Contents
      6.2.  Informative References
    Appendix A.  Acknowledgements
    Appendix B.  Change log
-     B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-02
-     B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
-     B.3.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
+     B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
+     B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
    Appendix C.  Test Vectors
      C.1.  X25519Kyber768Draft00, HKDF-SHA256, AES-128-GCM
        C.1.1.  Base Setup Information
@@ -360,11 +359,7 @@ Appendix B.  Change log
       *RFC Editor's Note:* Please remove this section prior to
       publication of a final version of this document.
 
-B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-02
-
-   *  No changes.
-
-B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
+B.1.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
 
    *  Corrected test vectors.  In particular, specify randomness used
       during encapsulation, and clarify why there is no such thing as an
@@ -372,7 +367,7 @@ B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-01
 
    *  Clarify correct value of implicit suite_id.
 
-B.3.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
+B.2.  Since draft-westerbaan-cfrg-hpke-xyber768d00-00
 
    *  Add acknowledgements.
 
