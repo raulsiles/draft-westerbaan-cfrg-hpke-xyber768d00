@@ -205,7 +205,7 @@ DHKEM and Kyber768Draft00.
 ~~~
 def DeriveKeyPair(ikm):
   dkp_prk = LabeledExtract("", "dkp_prk", ikm)
-  seed = LabeledExpand(dkp_prk, "sk", 32 + 64)
+  seed = LabeledExpand(dkp_prk, "sk", "", 32 + 64)
   seed1 = seed[0:32]
   seed2 = seed[32:96]
   sk1, pk1 = DHKEM.DeriveKeyPair(seed1)
